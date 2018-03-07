@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(GraphicsHW1)
+project(FractalTerrainRendering)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(SDL2 REQUIRED)
@@ -10,9 +10,9 @@ set(SOURCE_FILE_DIR src/)
 set(SOURCE_FILES ${SOURCE_FILE_DIR}/main.cpp ${SOURCE_FILE_DIR}/glad.c ${SOURCE_FILE_DIR}/SDLGraphicsProgram.cpp src/SimpleCamera.cpp)
 include_directories(include/ ${SDL2_INCLUDE_DIR} deps/glm/)
 
-add_executable(GraphicsHW1 ${SOURCE_FILES})
-target_link_libraries(GraphicsHW1 ${SDL2_LIBRARY})
+add_executable(FractalTerrainRendering ${SOURCE_FILES})
+target_link_libraries(FractalTerrainRendering ${SDL2_LIBRARY})
 
-add_custom_command(TARGET GraphicsHW1 POST_BUILD
+add_custom_command(TARGET FractalTerrainRendering POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/objects ${CMAKE_BINARY_DIR})
