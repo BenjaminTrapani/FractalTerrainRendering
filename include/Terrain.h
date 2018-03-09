@@ -27,7 +27,6 @@ private:
     const unsigned int indexBufferSize;
     GLuint vbo;
     GLuint ibo;
-    std::shared_ptr<VertexIndexBufferData> terrainData;
 
     std::shared_ptr<VertexIndexBufferData> generateVertexIndexBuffers();
     void GenBuffers();

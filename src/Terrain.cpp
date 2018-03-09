@@ -41,7 +41,7 @@ std::shared_ptr<Terrain::VertexIndexBufferData> Terrain::generateVertexIndexBuff
 };
 
 void Terrain::GenBuffers() {
-    terrainData = generateVertexIndexBuffers();
+    auto const terrainData = generateVertexIndexBuffers();
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, terrainData->vertexData->size() * sizeof(terrainData->vertexData->at(0)),
