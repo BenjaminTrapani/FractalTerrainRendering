@@ -111,6 +111,8 @@ void SDLGraphicsProgram::loadAssets() {
     models[0] = std::make_shared<SimpleModel<OBJFileReader_t>>(cubeData);
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
+
+    terrainPatch = std::make_shared<Terrain>(16, 16);
 }
 
 // Initialize OpenGL
@@ -182,7 +184,8 @@ void SDLGraphicsProgram::render() {
     // Transfer data to gpu uniform
     glUniformMatrix4fv(viewProjID, 1, GL_FALSE, &viewProj[0][0]);
 
-    activeModel->bindVertexBuffer();
+    //activeModel->bindVertexBuffer();
+    terrainPatch->bindVertexBuffer();
     glVertexAttribPointer(0,  // Attribute 0, which will match layout in shader
                           3,            // size
                           GL_FLOAT, // Type
@@ -190,8 +193,10 @@ void SDLGraphicsProgram::render() {
                           0,                // Stride
                           (void *) 0
     );
-    activeModel->bindIndexBuffer();
-    glDrawElements(GL_TRIANGLES, activeModel->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
+    //activeModel->bindIndexBuffer();
+    //glDrawElements(GL_TRIANGLES, activeModel->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
+    terrainPatch->bindIndexBuffer();
+    glDrawElements(GL_TRIANGLES, terrainPatch->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
 
     // Remove our program
     glDisableVertexAttribArray(0);
