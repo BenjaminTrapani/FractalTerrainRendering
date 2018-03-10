@@ -122,6 +122,7 @@ bool SDLGraphicsProgram::initGL() {
     const std::string vertexShader = FractalTerrain::Utilities::slurpFile("vertex.glsl");
     const std::string fragmentShader = FractalTerrain::Utilities::slurpFile("fragment.glsl");
 
+    glPatchParameteri(GL_PATCH_VERTICES, 3);
     shader = CreateShader(vertexShader, fragmentShader);
 
     // Get viewProj uniform id and if we fail to find it, return false
