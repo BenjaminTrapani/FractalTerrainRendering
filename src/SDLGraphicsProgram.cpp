@@ -120,20 +120,29 @@ void SDLGraphicsProgram::loadAssets() {
 bool SDLGraphicsProgram::initGL() {
     // Setup shaders
     const std::string vertexShader = FractalTerrain::Utilities::slurpFile("vertex.glsl");
+    const std::string tessControlShader = FractalTerrain::Utilities::slurpFile("TessControl.glsl");
+    const std::string tessEvalShader = FractalTerrain::Utilities::slurpFile("TessEval.glsl");
     const std::string fragmentShader = FractalTerrain::Utilities::slurpFile("fragment.glsl");
-
-    glPatchParameteri(GL_PATCH_VERTICES, 3);
-    shader = CreateShader(vertexShader, fragmentShader);
-
-    // Get viewProj uniform id and if we fail to find it, return false
-    viewProjID = glGetUniformLocation(shader, "viewProj");
-    if (viewProjID < 0) {
-        return false;
-    }
 
     // VertexArrays
     glGenVertexArrays(1, &VAOId);
     glBindVertexArray(VAOId);
+
+    glPatchParameteri(GL_PATCH_VERTICES, 3);
+    shader = CreateShader(vertexShader, tessControlShader, tessEvalShader, fragmentShader);
+
+    cameraPosID = glGetUniformLocation(shader, "cameraWorldPos");
+    if (cameraPosID < 0) {
+        std::cerr << "Unable to find cameraWorldPos uniform" << std::endl;
+        return false;
+    }
+
+    // Get viewProj uniform id and if we fail to find it, return false
+    viewProjID = glGetUniformLocation(shader, "viewProj");
+    if (viewProjID < 0) {
+        std::cerr << "Unable to find viewProj uniform" << std::endl;
+        return false;
+    }
 
     return true;
 }
@@ -165,10 +174,12 @@ void SDLGraphicsProgram::render() {
     glUseProgram(shader);
     glEnableVertexAttribArray(0);
 
-    // Don't copy the matrix here
+    // Don't copy the matrix and vector data here
     const glm::mat4& viewProj = camera.getTransform();
-    // Transfer data to gpu uniform
+    const glm::vec3& cameraPos = camera.getPosition();
+    // Transfer data to gpu uniforms
     glUniformMatrix4fv(viewProjID, 1, GL_FALSE, &viewProj[0][0]);
+    glUniform3fv(cameraPosID, 1, &cameraPos[0]);
 
     //activeModel->bindVertexBuffer();
     terrainPatch->bindVertexBuffer();
@@ -182,7 +193,7 @@ void SDLGraphicsProgram::render() {
     //activeModel->bindIndexBuffer();
     //glDrawElements(GL_TRIANGLES, activeModel->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
     terrainPatch->bindIndexBuffer();
-    glDrawElements(GL_TRIANGLES, terrainPatch->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_PATCHES, terrainPatch->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
 
     // Remove our program
     glDisableVertexAttribArray(0);
@@ -312,26 +323,46 @@ void SDLGraphicsProgram::handleMouseEvent(int x, int y) {
     SDL_WarpMouseInWindow(getSDLWindow(), screenWidth / 2, screenHeight / 2);
 }
 
-unsigned int
-SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSource, const std::string &fragmentShaderSource) {
+unsigned int SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSource,
+                                 const std::string &tessControlSource,
+                                 const std::string &tessEvalSource,
+                                 const std::string &fragmentShaderSource) {
 
     // Create a new program
     unsigned int program = glCreateProgram();
     // Compile our shaders
     unsigned int myVertexShader = CompileShader(GL_VERTEX_SHADER, vertexShaderSource);
+    unsigned int tcShader = CompileShader(GL_TESS_CONTROL_SHADER, tessControlSource);
+    unsigned int teShader = CompileShader(GL_TESS_EVALUATION_SHADER, tessEvalSource);
     unsigned int myFragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
     // Link our program
     glAttachShader(program, myVertexShader);
+    glAttachShader(program, tcShader);
+    glAttachShader(program, teShader);
     glAttachShader(program, myFragmentShader);
     // Link our programs together
     glLinkProgram(program);
     glValidateProgram(program);
-
+    int programStatus = GL_FALSE;
+    glGetProgramiv(program, GL_VALIDATE_STATUS, &programStatus);
+    if (programStatus != GL_TRUE) {
+        GLsizei logLen;
+        GLchar infoLog[1024];
+        glGetProgramInfoLog(program, sizeof(infoLog), &logLen, infoLog);
+        std::string_view logView(infoLog, (size_t)logLen);
+        std::stringstream errorStream;
+        errorStream << "Failed to link program:\n" << logView;
+        throw std::invalid_argument(errorStream.str());
+    }
     // Once the shaders have been linked in, we can delete them.
     glDetachShader(program, myVertexShader);
+    glDetachShader(program, tcShader);
+    glDetachShader(program, teShader);
     glDetachShader(program, myFragmentShader);
 
     glDeleteShader(myVertexShader);
+    glDeleteShader(tcShader);
+    glDeleteShader(teShader);
     glDeleteShader(myFragmentShader);
 
     return program;
@@ -340,13 +371,8 @@ SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSource, const st
 
 unsigned int SDLGraphicsProgram::CompileShader(unsigned int type, const std::string &source) {
     // Compile our shaders
-    unsigned int id;
+    unsigned int id = glCreateShader(type);
 
-    if (type == GL_VERTEX_SHADER) {
-        id = glCreateShader(GL_VERTEX_SHADER);
-    } else if (type == GL_FRAGMENT_SHADER) {
-        id = glCreateShader(GL_FRAGMENT_SHADER);
-    }
     const char *src = source.c_str();
     // The source of our shader
     glShaderSource(id, 1, &src, nullptr);
@@ -361,11 +387,7 @@ unsigned int SDLGraphicsProgram::CompileShader(unsigned int type, const std::str
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
         char *errorMessages = new char[length]; // Could also use alloca here.
         glGetShaderInfoLog(id, length, &length, errorMessages);
-        if (type == GL_VERTEX_SHADER) {
-            std::cout << "ERROR: GL_VERTEX_SHADER compilation failed!\n" << errorMessages << "\n";
-        } else if (type == GL_FRAGMENT_SHADER) {
-            std::cout << "ERROR: GL_FRAGMENT_SHADER compilation failed!\n" << errorMessages << "\n";
-        }
+        std::cout << "ERROR: compilation failed!\n" << errorMessages << "\n";
         // Reclaim our memory
         delete[] errorMessages;
         // Delete our broken shader

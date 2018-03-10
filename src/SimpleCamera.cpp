@@ -51,3 +51,7 @@ void SimpleCamera::updateTranslation(const glm::vec2& translationOffset) {
 const glm::mat4& SimpleCamera::getTransform()const {
     return combinedTransform;
 }
+
+const glm::vec3& SimpleCamera::getPosition() const {
+    return position;
+}

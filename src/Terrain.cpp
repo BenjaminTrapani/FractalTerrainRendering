@@ -21,7 +21,7 @@ std::shared_ptr<Terrain::VertexIndexBufferData> Terrain::generateVertexIndexBuff
         }
     }
 
-    // Triangulation. Operate on sets of 4 vertices in a square. Triangulate bottom left and then top right.
+    // Triangulation. Operate on sets of 4 vertices in a square. Triangulate top left and then bottom right.
     auto indices = std::make_shared<std::vector<GLuint>>(indexBufferSize);
     unsigned int indexBufferIndex = 0;
     for (unsigned int z = 0; z < patchHeight - 1; ++z) {

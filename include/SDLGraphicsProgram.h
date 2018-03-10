@@ -48,7 +48,10 @@ public:
     // loop that runs forever
     void loop();
     // Shader helpers
-    unsigned int CreateShader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
+    unsigned int CreateShader(const std::string& vertexShaderSource,
+                              const std::string& tessControlSource,
+                              const std::string& tessEvalSource,
+                              const std::string& fragmentShaderSource);
     unsigned int CompileShader(unsigned int type, const std::string& source);
 
 
@@ -100,6 +103,7 @@ private:
 
     //Uniform locations
     GLint viewProjID;
+    GLint cameraPosID;
 
     bool handleKey(SDL_Keycode keyCode);
     void handleMouseEvent(int x, int y);

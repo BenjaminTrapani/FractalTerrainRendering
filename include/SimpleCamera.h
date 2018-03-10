@@ -18,7 +18,8 @@ public:
     // Move camera by x and y amount where x defines movement along right vector and y defines movement along lookAt vector
     void updateTranslation(const glm::vec2& translationOffset);
     // Get a constant view of the current view projection transform
-    const glm::mat4& getTransform()const;
+    const glm::mat4& getTransform() const;
+    const glm::vec3& getPosition() const;
 private:
     float yaw; //rotation about y in radians
     float pitch; //rotation about x in radians

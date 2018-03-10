@@ -9,7 +9,7 @@
   * Camera math reference: http://www.opengl-tutorial.org/beginners-tutorials/tutorial-6-keyboard-and-mouse/
   * GLM library: https://github.com/g-truc/glm
   * SDL2 CMake script: https://github.com/brendan-w/collector/blob/master/cmake/FindSDL2.cmake
-  * 
+  * Tesselation example: http://ogldev.atspace.co.uk/www/tutorial30/tutorial30.html
 * (Optional) What was the most interesting part of the assignment? How would you improve this assignment?
   Seeing the result of loading the complex bunny model was really cool. Adding
   functionality for moving around the resulting scene would have been helpful in diagnosing issues with

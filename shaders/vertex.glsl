@@ -1,8 +1,11 @@
-#version 410
+#version 410 core
 
-in vec3 position;
-uniform mat4 viewProj;
+layout (location = 0) in vec3 position;
+
+// TODO accept modelToWorld transform as uniform here and multiply input pos by it
+
+out vec3 TCworldPos;
 
 void main() {
-    gl_Position = viewProj * vec4(position, 1.0f);
+    TCworldPos = position;
 }
