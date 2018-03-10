@@ -1,5 +1,5 @@
 #include "SDLGraphicsProgram.h"
-#include <utility>
+#include "Utilities.h"
 
 // Initialization function
 // Returns a true or false value based on successful completion of setup.
@@ -119,23 +119,8 @@ void SDLGraphicsProgram::loadAssets() {
 // Setup any of our shaders here.
 bool SDLGraphicsProgram::initGL() {
     // Setup shaders
-    const std::string vertexShader =
-            "#version 330 core\n"
-                    "in vec3 position;\n"
-                    "uniform mat4 viewProj;\n"
-                    "void main()\n"
-                    "{\n"
-                    "  gl_Position = viewProj * vec4(position, 1.0f);\n"
-                    "}\n";
-
-
-    const std::string fragmentShader =
-            "#version 330 core\n"
-                    "out vec4 color;\n"
-                    "void main()\n"
-                    "{\n"
-                    "  color = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
-                    "}\n";
+    const std::string vertexShader = FractalTerrain::Utilities::slurpFile("vertex.glsl");
+    const std::string fragmentShader = FractalTerrain::Utilities::slurpFile("fragment.glsl");
 
     shader = CreateShader(vertexShader, fragmentShader);
 
