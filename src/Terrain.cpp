@@ -55,6 +55,9 @@ void Terrain::GenBuffers() {
 
 Terrain::Terrain(unsigned int ipatchWidth, unsigned int ipatchHeight):
         patchWidth(ipatchWidth), patchHeight(ipatchHeight),
+        // Two triangles per square and
+        // (width - 1) * (height - 1) squares for a width x height set of vertices.
+        // 3 vertices per triangle.
         indexBufferSize(3 * (patchHeight - 1) * (patchWidth - 1) * 2) {
     GenBuffers();
 }
