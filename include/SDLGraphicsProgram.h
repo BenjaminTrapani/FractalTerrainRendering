@@ -103,7 +103,7 @@ private:
 
     //Uniform locations
     GLint viewProjID;
-    GLint cameraPosID;
+    GLint screenSizeID;
 
     bool handleKey(SDL_Keycode keyCode);
     void handleMouseEvent(int x, int y);

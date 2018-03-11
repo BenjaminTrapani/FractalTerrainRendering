@@ -70,6 +70,8 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
             success = false;
         }
 
+
+
         loadAssets();
 
         // Set initial mouse location to be screen center
@@ -131,16 +133,16 @@ bool SDLGraphicsProgram::initGL() {
     glPatchParameteri(GL_PATCH_VERTICES, 3);
     shader = CreateShader(vertexShader, tessControlShader, tessEvalShader, fragmentShader);
 
-    cameraPosID = glGetUniformLocation(shader, "cameraWorldPos");
-    if (cameraPosID < 0) {
-        std::cerr << "Unable to find cameraWorldPos uniform" << std::endl;
-        return false;
-    }
-
     // Get viewProj uniform id and if we fail to find it, return false
     viewProjID = glGetUniformLocation(shader, "viewProj");
     if (viewProjID < 0) {
         std::cerr << "Unable to find viewProj uniform" << std::endl;
+        return false;
+    }
+
+    screenSizeID = glGetUniformLocation(shader, "screenSize");
+    if (screenSizeID < 0) {
+        std::cerr << "Unable to find screenSize uniform" << std::endl;
         return false;
     }
 
@@ -176,10 +178,10 @@ void SDLGraphicsProgram::render() {
 
     // Don't copy the matrix and vector data here
     const glm::mat4& viewProj = camera.getTransform();
-    const glm::vec3& cameraPos = camera.getPosition();
+
     // Transfer data to gpu uniforms
     glUniformMatrix4fv(viewProjID, 1, GL_FALSE, &viewProj[0][0]);
-    glUniform3fv(cameraPosID, 1, &cameraPos[0]);
+    glUniform2f(screenSizeID, screenWidth, screenHeight);
 
     //activeModel->bindVertexBuffer();
     terrainPatch->bindVertexBuffer();
