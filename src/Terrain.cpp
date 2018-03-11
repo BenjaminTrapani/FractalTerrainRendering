@@ -16,8 +16,8 @@ std::shared_ptr<Terrain::VertexIndexBufferData> Terrain::generateVertexIndexBuff
             const float xPos = (float)x * spaceBetweenVerts.first;
             const float zPos = (float)z * spaceBetweenVerts.second;
             vertexPositions->at(vertedBufferIndex++) = xPos;
-            vertexPositions->at(vertedBufferIndex++) = zPos;
             vertexPositions->at(vertedBufferIndex++) = 0.0f;
+            vertexPositions->at(vertedBufferIndex++) = zPos;
         }
     }
 
@@ -28,13 +28,13 @@ std::shared_ptr<Terrain::VertexIndexBufferData> Terrain::generateVertexIndexBuff
         for (unsigned int x = 0; x < patchWidth - 1; ++x) {
             // Triangle anchored on lower left
             indices->at(indexBufferIndex++) = z * patchWidth + x;
-            indices->at(indexBufferIndex++) = (z + 1) * patchWidth + x + 1;
             indices->at(indexBufferIndex++) = (z + 1) * patchWidth + x;
+            indices->at(indexBufferIndex++) = (z + 1) * patchWidth + x + 1;
 
             // Triangle anchored on upper right
             indices->at(indexBufferIndex++) = z * patchWidth + x + 1;
-            indices->at(indexBufferIndex++) = (z + 1) * patchWidth + x + 1;
             indices->at(indexBufferIndex++) = z * patchWidth + x;
+            indices->at(indexBufferIndex++) = (z + 1) * patchWidth + x + 1;
         }
     }
     return std::make_shared<VertexIndexBufferData>(vertexPositions, indices);

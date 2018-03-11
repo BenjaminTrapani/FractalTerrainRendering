@@ -9,7 +9,7 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
                                                        camera(45, (float)w / (float)h),
                                                        shouldMove(false) {
     // Place camera a little in front of cube
-    camera.updateTranslation(glm::vec2(0.0f, -1.0f));
+    camera.updateTranslation(glm::vec2(0.0f, -10.0f));
 
     // Initialization flag
     bool success = true;
