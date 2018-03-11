@@ -8,13 +8,19 @@
 #include <glm/glm.hpp>
 
 class TerrainPatch {
-
+friend class Terrain;
 public:
     TerrainPatch(unsigned int patchWidth, unsigned int patchHeight);
     void bindVertexBuffer();
     void bindIndexBuffer();
     GLsizei getIndexBufferCount() const;
     void setPosition(const glm::vec3& pos);
+
+    // Here so it can be inlined. It is called frequently in Terrain
+    const glm::vec3& getPosition() const {
+        return position;
+    }
+
     const glm::mat4& getModelToWorldTransform() const;
 private:
     struct VertexIndexBufferData {

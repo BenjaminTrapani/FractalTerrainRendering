@@ -114,8 +114,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
 
-    terrainPatch = std::make_shared<TerrainPatch>(16, 16);
-    terrainPatch->setPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 8);
 }
 
 // Initialize OpenGL
@@ -161,6 +160,7 @@ bool SDLGraphicsProgram::initGL() {
 void SDLGraphicsProgram::update() {
     if (shouldMove)
         camera.updateTranslation(movementDir);
+    terrain->updatePatchPositions(camera.getPosition());
 }
 
 
@@ -185,15 +185,11 @@ void SDLGraphicsProgram::render() {
 
     // Don't copy the matrix and vector data here
     const glm::mat4& viewProj = camera.getTransform();
-    const glm::mat4& terrainTransform = terrainPatch->getModelToWorldTransform();
 
     // Transfer data to gpu uniforms
     glUniformMatrix4fv(viewProjID, 1, GL_FALSE, &viewProj[0][0]);
-    glUniformMatrix4fv(terrainModelToWorldID, 1, GL_FALSE, &terrainTransform[0][0]);
     glUniform2f(screenSizeID, screenWidth, screenHeight);
 
-    //activeModel->bindVertexBuffer();
-    terrainPatch->bindVertexBuffer();
     glVertexAttribPointer(0,  // Attribute 0, which will match layout in shader
                           3,            // size
                           GL_FLOAT, // Type
@@ -201,11 +197,14 @@ void SDLGraphicsProgram::render() {
                           0,                // Stride
                           (void *) 0
     );
-    //activeModel->bindIndexBuffer();
-    //glDrawElements(GL_TRIANGLES, activeModel->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
-    terrainPatch->bindIndexBuffer();
-    glDrawElements(GL_PATCHES, terrainPatch->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
-
+    auto patchesToRender = terrain->getTerrainPatches();
+    for (auto terrainPatch : patchesToRender) {
+        const glm::mat4 &terrainTransform = terrainPatch->getModelToWorldTransform();
+        glUniformMatrix4fv(terrainModelToWorldID, 1, GL_FALSE, &terrainTransform[0][0]);
+        terrainPatch->bindVertexBuffer();
+        terrainPatch->bindIndexBuffer();
+        glDrawElements(GL_PATCHES, terrainPatch->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
+    }
     // Remove our program
     glDisableVertexAttribArray(0);
     glUseProgram(NULL);

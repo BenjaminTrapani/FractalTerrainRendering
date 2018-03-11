@@ -8,7 +8,7 @@
 // Generate a patchWidth x patchHeight size set of vertices with triangulations in index buffer.
 // Vertices have an origin at x = y = z = 0 and span along x and z from [0, 0] -> [1, 1]
 std::shared_ptr<TerrainPatch::VertexIndexBufferData> TerrainPatch::generateVertexIndexBuffers() {
-    const std::pair<float, float> spaceBetweenVerts(1.0f / (float)patchWidth, 1.0f / (float)patchHeight);
+    const std::pair<float, float> spaceBetweenVerts(1.0f / (patchWidth - 1.0f), 1.0f / (patchHeight - 1.0f));
     // Layout (x y z), (x y z) ...
     auto vertexPositions = std::make_shared<std::vector<float>>(patchWidth * patchHeight * 3);
     unsigned int vertedBufferIndex = 0;
