@@ -5,6 +5,7 @@
 #pragma once
 #include "glad/glad.h"
 #include <vector>
+#include <glm/glm.hpp>
 
 class Terrain {
 
@@ -13,7 +14,8 @@ public:
     void bindVertexBuffer();
     void bindIndexBuffer();
     GLsizei getIndexBufferCount() const;
-
+    void setPosition(const glm::vec3& pos);
+    const glm::mat4& getModelToWorldTransform() const;
 private:
     struct VertexIndexBufferData {
         std::shared_ptr<std::vector<float>> vertexData;
@@ -27,7 +29,10 @@ private:
     const unsigned int indexBufferSize;
     GLuint vbo;
     GLuint ibo;
+    glm::vec3 position;
+    glm::mat4 modelToWorldTransform;
 
     std::shared_ptr<VertexIndexBufferData> generateVertexIndexBuffers();
-    void GenBuffers();
+    void genBuffers();
+    void updateTransform();
 };

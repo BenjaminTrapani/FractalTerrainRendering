@@ -104,6 +104,7 @@ private:
     //Uniform locations
     GLint viewProjID;
     GLint screenSizeID;
+    GLint terrainModelToWorldID;
 
     bool handleKey(SDL_Keycode keyCode);
     void handleMouseEvent(int x, int y);

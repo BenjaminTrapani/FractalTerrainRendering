@@ -3,6 +3,7 @@
 //
 
 #include "Terrain.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 // Generate a patchWidth x patchHeight size set of vertices with triangulations in index buffer.
 // Vertices have an origin at x = y = z = 0 and span along x and z from [0, 0] -> [1, 1]
@@ -40,7 +41,20 @@ std::shared_ptr<Terrain::VertexIndexBufferData> Terrain::generateVertexIndexBuff
     return std::make_shared<VertexIndexBufferData>(vertexPositions, indices);
 };
 
-void Terrain::GenBuffers() {
+void Terrain::updateTransform() {
+    modelToWorldTransform = glm::translate(glm::mat4(), position);
+}
+
+void Terrain::setPosition(const glm::vec3& pos) {
+    position = pos;
+    updateTransform();
+}
+
+const glm::mat4& Terrain::getModelToWorldTransform() const {
+    return modelToWorldTransform;
+}
+
+void Terrain::genBuffers() {
     auto const terrainData = generateVertexIndexBuffers();
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -59,7 +73,8 @@ Terrain::Terrain(unsigned int ipatchWidth, unsigned int ipatchHeight):
         // (width - 1) * (height - 1) squares for a width x height set of vertices.
         // 3 vertices per triangle.
         indexBufferSize(3 * (patchHeight - 1) * (patchWidth - 1) * 2) {
-    GenBuffers();
+    genBuffers();
+    setPosition(glm::vec3());
 }
 
 void Terrain::bindVertexBuffer() {
@@ -68,6 +83,7 @@ void Terrain::bindVertexBuffer() {
 void Terrain::bindIndexBuffer() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 }
+
 GLsizei Terrain::getIndexBufferCount() const {
     return indexBufferSize;
 }

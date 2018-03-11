@@ -9,7 +9,7 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
                                                        camera(45, (float)w / (float)h),
                                                        shouldMove(false) {
     // Place camera a little in front of cube
-    camera.updateTranslation(glm::vec2(0.0f, -10.0f));
+    camera.updateTranslation(glm::vec2(0.0f, -1.0f));
 
     // Initialization flag
     bool success = true;
@@ -115,6 +115,7 @@ void SDLGraphicsProgram::loadAssets() {
     activeModel = models[0];
 
     terrainPatch = std::make_shared<Terrain>(16, 16);
+    terrainPatch->setPosition(glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
 // Initialize OpenGL
@@ -143,6 +144,12 @@ bool SDLGraphicsProgram::initGL() {
     screenSizeID = glGetUniformLocation(shader, "screenSize");
     if (screenSizeID < 0) {
         std::cerr << "Unable to find screenSize uniform" << std::endl;
+        return false;
+    }
+
+    terrainModelToWorldID = glGetUniformLocation(shader, "modelToWorld");
+    if (terrainModelToWorldID < 0) {
+        std::cerr << "Unable to find modelToWorld uniform" << std::endl;
         return false;
     }
 
@@ -178,9 +185,11 @@ void SDLGraphicsProgram::render() {
 
     // Don't copy the matrix and vector data here
     const glm::mat4& viewProj = camera.getTransform();
+    const glm::mat4& terrainTransform = terrainPatch->getModelToWorldTransform();
 
     // Transfer data to gpu uniforms
     glUniformMatrix4fv(viewProjID, 1, GL_FALSE, &viewProj[0][0]);
+    glUniformMatrix4fv(terrainModelToWorldID, 1, GL_FALSE, &terrainTransform[0][0]);
     glUniform2f(screenSizeID, screenWidth, screenHeight);
 
     //activeModel->bindVertexBuffer();
