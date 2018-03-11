@@ -29,7 +29,7 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
         errorStream << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
         success = false;
     } else {
-        //Use OpenGL 3.3 core
+        //Use OpenGL 4.1 core
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
