@@ -7,10 +7,10 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-class Terrain {
+class TerrainPatch {
 
 public:
-    Terrain(unsigned int patchWidth, unsigned int patchHeight);
+    TerrainPatch(unsigned int patchWidth, unsigned int patchHeight);
     void bindVertexBuffer();
     void bindIndexBuffer();
     GLsizei getIndexBufferCount() const;

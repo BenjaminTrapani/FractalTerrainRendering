@@ -26,7 +26,7 @@
 #include "DefaultOBJReaderFunctors.h"
 #include "SimpleModel.hpp"
 #include "SimpleCamera.h"
-#include "Terrain.h"
+#include "TerrainPatch.h"
 
 // This class sets up a full graphics program
 class SDLGraphicsProgram{
@@ -69,7 +69,7 @@ private:
     // The model to render in the current frame
     std::shared_ptr<SimpleModel<OBJFileReader_t>> activeModel;
 
-    std::shared_ptr<Terrain> terrainPatch;
+    std::shared_ptr<TerrainPatch> terrainPatch;
 
     // Are we currently rendering a wireframe?
     bool isWireframe;

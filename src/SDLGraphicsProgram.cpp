@@ -114,7 +114,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
 
-    terrainPatch = std::make_shared<Terrain>(16, 16);
+    terrainPatch = std::make_shared<TerrainPatch>(16, 16);
     terrainPatch->setPosition(glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
