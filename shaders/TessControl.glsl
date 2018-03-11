@@ -27,9 +27,13 @@ void main() {
     vec2 vert1Screen = projectToScreen(TCworldPos[1]);
     vec2 vert2Screen = projectToScreen(TCworldPos[2]);
 
-    gl_TessLevelOuter[0] = computeTessFactor(vert1Screen, vert2Screen);
-    gl_TessLevelOuter[1] = computeTessFactor(vert2Screen, vert0Screen);
-    gl_TessLevelOuter[2] = computeTessFactor(vert0Screen, vert1Screen);
+    float tessFac0 = computeTessFactor(vert1Screen, vert2Screen);
+    float tessFac1 = computeTessFactor(vert2Screen, vert0Screen);
+    float tessFac2 = computeTessFactor(vert0Screen, vert1Screen);
 
-    gl_TessLevelInner[0] = (gl_TessLevelOuter[0] + gl_TessLevelOuter[1] + gl_TessLevelOuter[2]) / 3.0;
+    gl_TessLevelOuter[0] = tessFac0;
+    gl_TessLevelOuter[1] = tessFac1;
+    gl_TessLevelOuter[2] = tessFac2;
+
+    gl_TessLevelInner[0] = (tessFac0 + tessFac1 + tessFac2) / 3.0;
 }
