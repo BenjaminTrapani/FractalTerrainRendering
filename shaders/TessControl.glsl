@@ -17,7 +17,7 @@ vec2 projectToScreen(vec3 value) {
 }
 
 float computeTessFactor(vec2 screenV1, vec2 screenV2) {
-    return clamp(distance(screenV1, screenV2) / 32.0, 1.0, 512.0);
+    return clamp(distance(screenV1, screenV2) / 16.0, 1.0, 128.0);
 }
 
 void main() {

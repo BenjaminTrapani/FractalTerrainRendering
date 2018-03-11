@@ -9,7 +9,7 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
                                                        camera(45, (float)w / (float)h),
                                                        shouldMove(false) {
     // Place camera a little in front of cube
-    camera.updateTranslation(glm::vec2(0.0f, -5.0f));
+    camera.updateTranslation(glm::vec2(0.0f, -1.0f));
 
     // Initialization flag
     bool success = true;
@@ -204,7 +204,7 @@ void SDLGraphicsProgram::render() {
 
 void SDLGraphicsProgram::handleMove(SDL_Keycode keyCode) {
     // TODO make moveSpeed not depend on framerate
-    const float moveSpeed = 0.1f;
+    const float moveSpeed = 0.01f;
     shouldMove = true;
     switch(keyCode) {
         case SDLK_UP:{
