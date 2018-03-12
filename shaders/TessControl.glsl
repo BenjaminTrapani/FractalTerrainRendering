@@ -19,6 +19,7 @@ vec2 projectToScreen(vec4 projectedVert) {
 }
 
 float computeTessFactor(vec2 screenV1, vec2 screenV2) {
+    // hard-code to 16 pixels per tess factor for now
     return clamp(distance(screenV1, screenV2) / 16.0, 1.0, 128.0);
 }
 
