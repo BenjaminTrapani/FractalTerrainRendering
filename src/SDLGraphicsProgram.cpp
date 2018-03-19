@@ -212,7 +212,7 @@ void SDLGraphicsProgram::render() {
 
 void SDLGraphicsProgram::handleMove(SDL_Keycode keyCode) {
     // TODO make moveSpeed not depend on framerate
-    const float moveSpeed = 0.01f;
+    const float moveSpeed = 0.1f;
     shouldMove = true;
     switch(keyCode) {
         case SDLK_UP:{
