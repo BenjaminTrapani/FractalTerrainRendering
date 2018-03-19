@@ -24,7 +24,7 @@ float computeTessFactor(vec2 screenV1, vec2 screenV2) {
 }
 
 bool isVertexOffscreen(vec4 vert) {
-    return any(lessThan(vert.xy, vec2(-1.0))) || any(greaterThan(vert.xy, vec2(1.0)));
+    return any(lessThan(vert.xy, vec2(-1.5))) || any(greaterThan(vert.xy, vec2(1.5)));
 }
 
 void main() {
