@@ -6,6 +6,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <memory>
+#include <vector>
 
 class Texture{
 public:
@@ -46,7 +47,7 @@ private:
 	// Filepath to the image loaded
     std::string m_filepath;
 	// Raw pixel data
-    unsigned char* m_PixelData;
+    std::vector<unsigned char> m_PixelData;
 	// Size and format of image
     int m_width{0}; // Width of the image
     int m_height{0}; // Height of the image

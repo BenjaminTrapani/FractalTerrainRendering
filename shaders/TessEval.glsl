@@ -17,7 +17,7 @@ void main() {
     float h3 = noise1(posFromBary.xz * 16);
     float h4 = noise1(posFromBary.xz * 32);
     // TODO make these factors uniforms so that they can be edited at runtime
-    posFromBary.y = heightHere * 1.0 + h2 * 0.25 + h3 * 0.125 + h4 * 0.07;
+    posFromBary.y = heightHere * 1.0 + h2 * 0.15 + h3 * 0.05 + h4 * 0.01;
     gl_Position = viewProj * vec4(posFromBary, 1.0);
     fragPos = posFromBary;
 }

@@ -5,9 +5,10 @@
 
 using namespace FractalTerrain;
 
-Terrain::Terrain(unsigned int patchWidth, unsigned int patchHeight, unsigned int patchTileSize):
+Terrain::Terrain(unsigned int patchWidth, unsigned int patchHeight,
+                 unsigned int patchTileSize, const unsigned int shaderID):
         terrainPatches(patchTileSize * patchTileSize),
-        halfPatchTileSize(((double)patchTileSize) * 0.5){
+        halfPatchTileSize(((double)patchTileSize) * 0.5) {
     for (unsigned int z = 0; z < patchTileSize; ++z) {
         for (unsigned int x = 0; x < patchTileSize; x++) {
             auto newTerrainPatch = std::make_shared<TerrainPatch>(patchWidth, patchHeight);
@@ -15,7 +16,24 @@ Terrain::Terrain(unsigned int patchWidth, unsigned int patchHeight, unsigned int
             terrainPatches.at(z * patchTileSize + x) = newTerrainPatch;
         }
     }
+
+    initTextures(shaderID);
 }
+
+void Terrain::initTextures(const unsigned int shaderID) {
+    unsigned int slotIndex = 0;
+    auto desertMountainGroup = std::make_shared<TextureGroup>("desert_mntn_d.ppm", "desert_mntn_n.ppm",
+                                                              slotIndex, shaderID);
+    textures.push_back(desertMountainGroup);
+    ++slotIndex;
+}
+
+void Terrain::bindTextures() {
+    for (auto pTextureGroup : textures) {
+        pTextureGroup->Bind();
+    }
+}
+
 void Terrain::updatePatchPositions(const glm::vec3& cameraPos) {
     // Only consider camera x and z location.
     // For each patch:

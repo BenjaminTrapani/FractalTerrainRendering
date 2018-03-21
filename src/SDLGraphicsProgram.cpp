@@ -114,7 +114,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
 
-    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 8);
+    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 8, shader);
 }
 
 // Initialize OpenGL
@@ -168,8 +168,9 @@ void SDLGraphicsProgram::update() {
 // The render function gets called once per loop
 void SDLGraphicsProgram::render() {
     // Disable depth test and enable face culling.
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_2D);
 
     // Initialize clear color
     // This is the background of the screen.
@@ -197,6 +198,8 @@ void SDLGraphicsProgram::render() {
                           0,                // Stride
                           (void *) 0
     );
+
+    terrain->bindTextures();
     auto patchesToRender = terrain->getTerrainPatches();
     for (auto terrainPatch : patchesToRender) {
         const glm::mat4 &terrainTransform = terrainPatch->getModelToWorldTransform();

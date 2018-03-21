@@ -20,12 +20,6 @@ Texture::Texture(){
 Texture::~Texture(){
 	// Delete our texture from the GPU
 	glDeleteTextures(1,&m_TextureID);
-	// Delete our pixel data.	
-	// Note: We could actually do this sooner
-	// in our rendering process.
-	if(m_PixelData!=NULL){
-		delete[] m_PixelData;
-	}
 }
 
 void Texture::LoadTexture(const std::string filepath){
@@ -49,8 +43,8 @@ void Texture::LoadTexture(const std::string filepath){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 	// Wrap mode describes what to do if we go outside the boundaries of
 	// texture.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	// At this point, we are now ready to load and send some data to OpenGL.
 	glTexImage2D(GL_TEXTURE_2D,
 							0 ,
@@ -60,7 +54,7 @@ void Texture::LoadTexture(const std::string filepath){
 							0,
 						GL_RGB,
 						GL_UNSIGNED_BYTE,
-						m_PixelData); // Here is the raw pixel data
+						m_PixelData.data()); // Here is the raw pixel data
 	// We are done with our texture data so we can unbind.
 	// Generate a mipmap
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -82,6 +76,7 @@ void Texture::loadPPM(bool flip){
   // Open an input file stream for reading a file
   std::ifstream ppmFile(m_filepath.c_str());
   // If our file successfully opens, begin to process it.
+    int imageSize;
   if (ppmFile.is_open()){
       // line will store one line of input
       std::string line;
@@ -90,36 +85,38 @@ void Texture::loadPPM(bool flip){
       std::cout << "Reading in ppm file: " << m_filepath << std::endl;
       unsigned int iteration = 0;
       unsigned int pos = 0;
-      while ( getline (ppmFile,line) ){
-		 if(line[0]=='P'){
-		 	magicNumber = line;
-		 }else if(iteration==1){
-			// Returns first token 
-			char *token = strtok((char*)line.c_str(), " "); 
-			m_width = atoi(token);
-        	token = strtok(NULL, " ");
-			m_height = atoi(token);
-			std::cout << "PPM width,height=" << m_width << "," << m_height << "\n";	
-			if(m_width > 0 && m_height > 0){
-            	m_PixelData = new unsigned char[m_width*m_height*3];
-                if(m_PixelData==NULL){
-                	std::cout << "Unable to allocate memory for ppm" << std::endl;
-                    exit(1);
-                 }
-             }else{
-                std::cout << "PPM not parsed correctly, width and/or height dimensions are 0" << std::endl;
-				exit(1);
-             }
-		 }else if(iteration==2){
-			// max color range is stored here
-			// TODO: Can be stored optionally	
-		 }else{
-			m_PixelData[pos] = (unsigned char)atoi(line.c_str());
-            ++pos;
-		 }
-          iteration++;
-	}             
-    ppmFile.close();
+      while ( getline (ppmFile,line) ) {
+          if (line[0] == 'P') {
+              magicNumber = line;
+          } else if (iteration == 1) {
+              // Returns first token
+              char *token = strtok((char *) line.c_str(), " ");
+              m_width = atoi(token);
+              token = strtok(NULL, " ");
+              m_height = atoi(token);
+              std::cout << "PPM width,height=" << m_width << "," << m_height << "\n";
+              if (m_width > 0 && m_height > 0) {
+                  imageSize = m_width * m_height * 3;
+                  m_PixelData.resize(imageSize);
+              } else {
+                  std::cout << "PPM not parsed correctly, width and/or height dimensions are 0" << std::endl;
+                  exit(1);
+              }
+          } else if (iteration == 2) {
+              // max color range is stored here
+              // TODO: Can be stored optionally
+              break;
+          }
+          ++iteration;
+      }
+      char buf[imageSize];
+      ppmFile.read(buf, m_width * m_height * 3);
+      if (ppmFile.eof() && ppmFile.fail()) {
+          std::cerr << "Not enough bytes in file to fill pixel data" << std::endl;
+          exit(1);
+      }
+      memcpy(&m_PixelData[0], buf, imageSize);
+      ppmFile.close();
   }
   else{
       std::cout << "Unable to open ppm file:" << m_filepath << std::endl;
