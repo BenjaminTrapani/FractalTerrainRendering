@@ -4,7 +4,6 @@ layout (vertices = 3) out;
 
 in vec3 TCworldPos[];
 out vec3 TEworldPos[];
-out float TETessLevel[];
 
 uniform mat4 viewProj;
 uniform vec2 screenSize;
@@ -58,7 +57,6 @@ void main() {
         gl_TessLevelOuter[2] = tessFac2;
 
         float averageTessFac = (tessFac0 + tessFac1 + tessFac2) / 3.0;
-        TETessLevel[gl_InvocationID] = averageTessFac;
         gl_TessLevelInner[0] = averageTessFac;
     }
 }

@@ -24,13 +24,6 @@ void main() {
                        gl_TessCoord.y * TEworldPos[1] +
                        gl_TessCoord.z * TEworldPos[2];
 
-    float weightedTessLevel = gl_TessCoord.x * TETessLevel[0] +
-                              gl_TessCoord.y * TETessLevel[1] +
-                              gl_TessCoord.z * TETessLevel[2];
-    // lerp along TETessLevel - floor(TETessLevel) to determine height
-    float progressIntoTessLevel = weightedTessLevel - floor(weightedTessLevel);
-    float destHeight = getHeightAt(posFromBary.xz);
-    //posFromBary.y = mix(posFromBary.y, destHeight, progressIntoTessLevel);
     posFromBary.y = getHeightAt(posFromBary.xz);
     gl_Position = viewProj * vec4(posFromBary, 1.0);
     fragPos = posFromBary;
