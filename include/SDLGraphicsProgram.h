@@ -113,6 +113,7 @@ private:
     bool handleKey(SDL_Keycode keyCode);
     void handleMouseEvent(int x, int y);
     void handleMove(SDL_Keycode keyCode);
+    void rotateSun(float angle, const glm::vec3& axis);
 };
 
 #endif

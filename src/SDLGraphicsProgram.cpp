@@ -1,6 +1,7 @@
 #include "SDLGraphicsProgram.h"
 #include "Utilities.h"
-
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 // Initialization function
 // Returns a true or false value based on successful completion of setup.
 // Takes in dimensions of window.
@@ -227,29 +228,56 @@ void SDLGraphicsProgram::render() {
     glUseProgram(NULL);
 }
 
+void SDLGraphicsProgram::rotateSun(const float angle, const glm::vec3& axis) {
+  auto& sun = lights->getSun();
+  const glm::vec3& prevSunLocation = sun.getPosition();
+  const glm::vec3 rotatedLoc = glm::rotate(prevSunLocation, angle, axis);
+  sun.setPosition(rotatedLoc);
+}
+
 void SDLGraphicsProgram::handleMove(SDL_Keycode keyCode) {
     // TODO make moveSpeed not depend on framerate
     const float moveSpeed = 0.1f;
-    shouldMove = true;
+    const float rotateSpeed = 0.1f;
+    shouldMove = false;
     switch(keyCode) {
         case SDLK_UP:{
             movementDir = glm::vec2(0.0f, moveSpeed);
+            shouldMove = true;
             break;
         }
         case SDLK_DOWN:{
             movementDir = glm::vec2(0.0f, -moveSpeed);
+            shouldMove = true;
             break;
         }
         case SDLK_RIGHT:{
             movementDir = glm::vec2(moveSpeed, 0.0f);
+            shouldMove = true;
             break;
         }
         case SDLK_LEFT:{
             movementDir = glm::vec2(-moveSpeed, 0.0f);
+            shouldMove = true;
             break;
         }
+        case SDLK_s:{
+          rotateSun(rotateSpeed, glm::vec3(1.0, 0.0, 0.0));
+          break;
+        }
+        case SDLK_x:{
+          rotateSun(-rotateSpeed, glm::vec3(1.0, 0.0, 0.0));
+          break;
+        }
+        case SDLK_z:{
+          rotateSun(-rotateSpeed, glm::vec3(0.0, 0.0, 1.0));
+          break;
+        }
+        case SDLK_c:{
+          rotateSun(rotateSpeed, glm::vec3(0.0, 0.0, 1.0));
+          break;
+        }
         default: {
-            shouldMove = false;
             break;
         }
     }

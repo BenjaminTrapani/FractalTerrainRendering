@@ -23,7 +23,9 @@ namespace FractalTerrain {
                   const glm::vec3 &diffuseColor);
 
             void setPosition(const glm::vec3 &position);
-
+            const glm::vec3& getPosition() const {
+              return position;
+            }
         private:
             void bind();
 

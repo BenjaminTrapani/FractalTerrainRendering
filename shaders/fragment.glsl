@@ -37,17 +37,18 @@ void main() {
                                                     textureGroups[0].ambientFac);
 
     vec3 normal = texture(textureGroups[0].normalMap, sampleCoords).rgb;
-    normal = normalize(normal * 2.0 - 1.0);
+    //normal = normalize(normal * 2.0 - 1.0);
+    normal = normalize(normal);
 
     vec3 diffuseColor = texture(textureGroups[0].diffuseMap, sampleCoords).rgb;
     vec3 specularColor = texture(textureGroups[0].specularMap, sampleCoords).rgb;
 
-    vec3 diffuseContrib = /*diffuseColor*/ vec3(1.0, 1.0, 1.0) * dot(tangentSunDir, vec3(0.0, 1.0, 0.0)) * lights[0].diffuseColor;
+    vec3 diffuseContrib = diffuseColor * max(dot(tangentSunDir, normal), 0.0) * lights[0].diffuseColor;
     vec3 reflectedDir = 2.0 * (dot(tangentSunDir, normal)) * normal - tangentSunDir;
     vec3 directionToViewer = normalize(tangentViewPos - tangentFragPos);
     vec3 specularContrib = specularColor *
                                  pow(dot(reflectedDir, directionToViewer), textureGroups[0].shininess) *
                                  lights[0].specularColor;
-    vec3 prelimColor = min(diffuseContrib /*+ specularContrib + ambientContrib*/, 1.0);
+    vec3 prelimColor = min(diffuseContrib + specularContrib + ambientContrib, 1.0);
     color = vec4(prelimColor, 1.0);
 }
