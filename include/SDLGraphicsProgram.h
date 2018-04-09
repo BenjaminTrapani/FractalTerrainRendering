@@ -27,6 +27,7 @@
 #include "SimpleModel.hpp"
 #include "SimpleCamera.h"
 #include "Terrain.h"
+#include "Lights.h"
 
 // This class sets up a full graphics program
 class SDLGraphicsProgram{
@@ -51,6 +52,7 @@ public:
     unsigned int CreateShader(const std::string& vertexShaderSource,
                               const std::string& tessControlSource,
                               const std::string& tessEvalSource,
+                              const std::string& geometryShaderSource,
                               const std::string& fragmentShaderSource);
     unsigned int CompileShader(unsigned int type, const std::string& source);
 
@@ -70,6 +72,7 @@ private:
     std::shared_ptr<SimpleModel<OBJFileReader_t>> activeModel;
 
     std::shared_ptr<FractalTerrain::Terrain> terrain;
+    std::shared_ptr<FractalTerrain::Lights> lights;
 
     // Are we currently rendering a wireframe?
     bool isWireframe;
@@ -105,6 +108,7 @@ private:
     GLint viewProjID;
     GLint screenSizeID;
     GLint terrainModelToWorldID;
+    GLint cameraPosID;
 
     bool handleKey(SDL_Keycode keyCode);
     void handleMouseEvent(int x, int y);

@@ -23,6 +23,7 @@ Terrain::Terrain(unsigned int patchWidth, unsigned int patchHeight,
 void Terrain::initTextures(const unsigned int shaderID) {
     unsigned int slotIndex = 0;
     auto desertMountainGroup = std::make_shared<TextureGroup>("desert_mntn_d.ppm", "desert_mntn_n.ppm",
+                                                              "desert_mntn_s.ppm", 0.1, 0.7,
                                                               slotIndex, shaderID);
     textures.push_back(desertMountainGroup);
     ++slotIndex;

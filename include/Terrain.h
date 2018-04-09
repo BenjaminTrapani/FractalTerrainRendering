@@ -10,6 +10,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include "Texture.h"
+#include "glad/glad.h"
 
 namespace FractalTerrain {
     class Terrain {
@@ -28,28 +29,58 @@ namespace FractalTerrain {
     private:
         class TextureGroup {
         public:
-            static constexpr unsigned int slotsPerGroup = 2;
+            static constexpr unsigned int slotsPerGroup = 3;
 
             TextureGroup(const std::string& diffusePath,
                          const std::string& normalPath,
+                         const std::string& specularPath,
+                         const float iambientFac,
+                         const float ishininess,
                          const unsigned int index,
-                         const unsigned int shaderID): slotIndex(index * slotsPerGroup) {
+                         const unsigned int shaderID): ambientFac(iambientFac),
+                                                       shininess(ishininess),
+                                                       slotIndex(index * slotsPerGroup) {
                 std::stringstream groupIndexedAccess;
                 groupIndexedAccess << "textureGroups[" << index << "]";
                 const std::string groupIndexedAccessStr = groupIndexedAccess.str();
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "diffuseMap", slotIndex);
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "normalMap", slotIndex + 1);
+                setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "specularMap", slotIndex + 2);
                 diffuseMap.LoadTexture(diffusePath);
                 normalMap.LoadTexture(normalPath);
+                specularMap.LoadTexture(specularPath);
+
+                std::stringstream ambientStrStream;
+                std::stringstream shininessStrStream;
+                ambientStrStream << groupIndexedAccessStr << ".ambientFac";
+                shininessStrStream << groupIndexedAccessStr << ".shininess";
+                ambientFacLoc = glGetUniformLocation(shaderID, ambientStrStream.str().c_str());
+                if (ambientFacLoc < 0) {
+                    throw std::invalid_argument("Unable to find ambient fac uniform for texture group");
+                }
+                shininessLoc = glGetUniformLocation(shaderID, shininessStrStream.str().c_str());
+                if (shininessLoc < 0) {
+                    throw std::invalid_argument("Unable to find shininess uniform for texture group");
+                }
             }
             void Bind() {
                 diffuseMap.Bind(slotIndex);
                 normalMap.Bind(slotIndex + 1);
+                specularMap.Bind(slotIndex + 2);
+
+                glUniform1f(ambientFacLoc, ambientFac);
+                glUniform1f(shininessLoc, shininess);
             }
         private:
+            const float ambientFac;
+            const float shininess;
+            const unsigned int slotIndex;
+
             Texture diffuseMap;
             Texture normalMap;
-            const unsigned int slotIndex;
+            Texture specularMap;
+            GLint ambientFacLoc;
+            GLint shininessLoc;
 
             void setupUniformNameForSlot(const unsigned int shaderID,
                                          const std::string& groupIndexedAccess,

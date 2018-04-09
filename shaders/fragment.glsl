@@ -1,25 +1,53 @@
 #version 410 core
 
+in vec3 tangentLightPos[1];
+in vec3 tangentViewPos;
 in vec3 fragPos;
+in vec3 tangentFragPos;
+in vec3 tangentSunDir;
 
 struct TextureGroup {
     sampler2D diffuseMap;
     sampler2D normalMap;
+    sampler2D specularMap;
+
+    float ambientFac;
+    float shininess;
 };
 
-// TODO blend between texture groups based on position or something cool
+struct Light {
+    // All light color components should be between 0 and 1.
+    vec3 ambientColor;
+    vec3 specularColor;
+    vec3 diffuseColor;
+};
+
+// Order texture groups in increasing order by height. Blend between colors at indices
 uniform TextureGroup textureGroups[1];
+uniform Light lights[1]; // lights[0] is reserved for the sun, so its position is ignored
+uniform vec3 ambientLightColor;
 
 out vec4 color;
 
 void main() {
-    /*float colorScale = 150.0f / 255.0f;
-    float colorOffset = 0.75 - 150.0f / 255.0f;
-    vec2 rg1 = noise2(fragPos);
-    vec2 rg2 = noise2(fragPos * 32);
-    vec2 rg3 = noise2(fragPos * 64);
-    vec2 rg4 = noise2(fragPos * 128);
-    vec2 combinedRG = (rg1 * 0.4 + rg2 * 0.25 + rg3 * 0.20 + rg4 * 0.15) * colorScale + colorOffset;*/
-    //vec2 combinedRG = vec2(1.0, 0.0);
-    color = vec4(texture(textureGroups[0].diffuseMap, fragPos.xz).rgb, 1.0);
+    vec2 sampleCoords = fragPos.xz;
+
+    vec3 ambientContrib = ambientLightColor * vec3(textureGroups[0].ambientFac,
+                                                    textureGroups[0].ambientFac,
+                                                    textureGroups[0].ambientFac);
+
+    vec3 normal = texture(textureGroups[0].normalMap, sampleCoords).rgb;
+    normal = normalize(normal * 2.0 - 1.0);
+
+    vec3 diffuseColor = texture(textureGroups[0].diffuseMap, sampleCoords).rgb;
+    vec3 specularColor = texture(textureGroups[0].specularMap, sampleCoords).rgb;
+
+    vec3 diffuseContrib = /*diffuseColor*/ vec3(1.0, 1.0, 1.0) * dot(tangentSunDir, vec3(0.0, 1.0, 0.0)) * lights[0].diffuseColor;
+    vec3 reflectedDir = 2.0 * (dot(tangentSunDir, normal)) * normal - tangentSunDir;
+    vec3 directionToViewer = normalize(tangentViewPos - tangentFragPos);
+    vec3 specularContrib = specularColor *
+                                 pow(dot(reflectedDir, directionToViewer), textureGroups[0].shininess) *
+                                 lights[0].specularColor;
+    vec3 prelimColor = min(diffuseContrib /*+ specularContrib + ambientContrib*/, 1.0);
+    color = vec4(prelimColor, 1.0);
 }

@@ -114,7 +114,10 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
 
-    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 8, shader);
+    terrain = std::make_shared<FractalTerrain::Terrain>(2, 2, 64, shader);
+    lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
+    const glm::vec3 ones(1.0, 1.0, 1.0);
+    lights->addLight(glm::vec3(0.0, 1.0, 0.0), ones, ones, ones);
 }
 
 // Initialize OpenGL
@@ -124,6 +127,7 @@ bool SDLGraphicsProgram::initGL() {
     const std::string vertexShader = FractalTerrain::Utilities::slurpFile("vertex.glsl");
     const std::string tessControlShader = FractalTerrain::Utilities::slurpFile("TessControl.glsl");
     const std::string tessEvalShader = FractalTerrain::Utilities::slurpFile("TessEval.glsl");
+    const std::string geometryShader = FractalTerrain::Utilities::slurpFile("Geometry.glsl");
     const std::string fragmentShader = FractalTerrain::Utilities::slurpFile("fragment.glsl");
 
     // VertexArrays
@@ -131,7 +135,7 @@ bool SDLGraphicsProgram::initGL() {
     glBindVertexArray(VAOId);
 
     glPatchParameteri(GL_PATCH_VERTICES, 3);
-    shader = CreateShader(vertexShader, tessControlShader, tessEvalShader, fragmentShader);
+    shader = CreateShader(vertexShader, tessControlShader, tessEvalShader, geometryShader, fragmentShader);
 
     // Get viewProj uniform id and if we fail to find it, return false
     viewProjID = glGetUniformLocation(shader, "viewProj");
@@ -149,6 +153,12 @@ bool SDLGraphicsProgram::initGL() {
     terrainModelToWorldID = glGetUniformLocation(shader, "modelToWorld");
     if (terrainModelToWorldID < 0) {
         std::cerr << "Unable to find modelToWorld uniform" << std::endl;
+        return false;
+    }
+
+    cameraPosID = glGetUniformLocation(shader, "cameraPos");
+    if (cameraPosID < 0) {
+        std::cerr << "Unable to find cameraPos uniform" << std::endl;
         return false;
     }
 
@@ -186,10 +196,12 @@ void SDLGraphicsProgram::render() {
 
     // Don't copy the matrix and vector data here
     const glm::mat4& viewProj = camera.getTransform();
+    const glm::vec3& cameraPos = camera.getPosition();
 
     // Transfer data to gpu uniforms
     glUniformMatrix4fv(viewProjID, 1, GL_FALSE, &viewProj[0][0]);
     glUniform2f(screenSizeID, screenWidth, screenHeight);
+    glUniform3fv(cameraPosID, 1, &cameraPos[0]);
 
     glVertexAttribPointer(0,  // Attribute 0, which will match layout in shader
                           3,            // size
@@ -198,6 +210,8 @@ void SDLGraphicsProgram::render() {
                           0,                // Stride
                           (void *) 0
     );
+
+    lights->bind();
 
     terrain->bindTextures();
     auto patchesToRender = terrain->getTerrainPatches();
@@ -337,9 +351,10 @@ void SDLGraphicsProgram::handleMouseEvent(int x, int y) {
 }
 
 unsigned int SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSource,
-                                 const std::string &tessControlSource,
-                                 const std::string &tessEvalSource,
-                                 const std::string &fragmentShaderSource) {
+                                              const std::string &tessControlSource,
+                                              const std::string &tessEvalSource,
+                                              const std::string &geometryShaderSource,
+                                              const std::string &fragmentShaderSource) {
 
     // Create a new program
     unsigned int program = glCreateProgram();
@@ -347,11 +362,13 @@ unsigned int SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSou
     unsigned int myVertexShader = CompileShader(GL_VERTEX_SHADER, vertexShaderSource);
     unsigned int tcShader = CompileShader(GL_TESS_CONTROL_SHADER, tessControlSource);
     unsigned int teShader = CompileShader(GL_TESS_EVALUATION_SHADER, tessEvalSource);
+    unsigned int geomShader = CompileShader(GL_GEOMETRY_SHADER, geometryShaderSource);
     unsigned int myFragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
     // Link our program
     glAttachShader(program, myVertexShader);
     glAttachShader(program, tcShader);
     glAttachShader(program, teShader);
+    glAttachShader(program, geomShader);
     glAttachShader(program, myFragmentShader);
     // Link our programs together
     glLinkProgram(program);
@@ -371,11 +388,13 @@ unsigned int SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSou
     glDetachShader(program, myVertexShader);
     glDetachShader(program, tcShader);
     glDetachShader(program, teShader);
+    glDetachShader(program, geomShader);
     glDetachShader(program, myFragmentShader);
 
     glDeleteShader(myVertexShader);
     glDeleteShader(tcShader);
     glDeleteShader(teShader);
+    glDeleteShader(geomShader);
     glDeleteShader(myFragmentShader);
 
     return program;

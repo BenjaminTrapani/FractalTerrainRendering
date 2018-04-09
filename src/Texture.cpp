@@ -75,8 +75,7 @@ void Texture::loadPPM(bool flip){
 
   // Open an input file stream for reading a file
   std::ifstream ppmFile(m_filepath.c_str());
-  // If our file successfully opens, begin to process it.
-    int imageSize;
+  // If our file successfully opens, begin to process it
   if (ppmFile.is_open()){
       // line will store one line of input
       std::string line;
@@ -96,8 +95,7 @@ void Texture::loadPPM(bool flip){
               m_height = atoi(token);
               std::cout << "PPM width,height=" << m_width << "," << m_height << "\n";
               if (m_width > 0 && m_height > 0) {
-                  imageSize = m_width * m_height * 3;
-                  m_PixelData.resize(imageSize);
+                  m_PixelData.resize((size_t)(m_width * m_height * 3));
               } else {
                   std::cout << "PPM not parsed correctly, width and/or height dimensions are 0" << std::endl;
                   exit(1);
@@ -109,13 +107,13 @@ void Texture::loadPPM(bool flip){
           }
           ++iteration;
       }
-      char buf[imageSize];
+      char buf[m_PixelData.size()];
       ppmFile.read(buf, m_width * m_height * 3);
       if (ppmFile.eof() && ppmFile.fail()) {
           std::cerr << "Not enough bytes in file to fill pixel data" << std::endl;
           exit(1);
       }
-      memcpy(&m_PixelData[0], buf, imageSize);
+      memcpy(&m_PixelData[0], buf, m_PixelData.size());
       ppmFile.close();
   }
   else{
