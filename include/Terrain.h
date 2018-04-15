@@ -43,6 +43,7 @@ namespace FractalTerrain {
                 std::stringstream groupIndexedAccess;
                 groupIndexedAccess << "textureGroups[" << index << "]";
                 const std::string groupIndexedAccessStr = groupIndexedAccess.str();
+                glUseProgram(shaderID);
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "diffuseMap", slotIndex);
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "normalMap", slotIndex + 1);
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "specularMap", slotIndex + 2);

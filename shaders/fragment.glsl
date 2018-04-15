@@ -36,9 +36,9 @@ void main() {
                                                     textureGroups[0].ambientFac,
                                                     textureGroups[0].ambientFac);
 
-    vec3 normal = texture(textureGroups[0].normalMap, sampleCoords).rgb;
-    //normal = normalize(normal * 2.0 - 1.0);
-    normal = normalize(normal);
+    vec3 unnormNormal = texture(textureGroups[0].normalMap, sampleCoords).rgb;
+    vec3 normal = normalize(unnormNormal * 2.0 - 1.0);
+    //vec3 normal = normalize(unnormNormal);
 
     vec3 diffuseColor = texture(textureGroups[0].diffuseMap, sampleCoords).rgb;
     vec3 specularColor = texture(textureGroups[0].specularMap, sampleCoords).rgb;
