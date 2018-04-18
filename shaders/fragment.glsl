@@ -44,12 +44,23 @@ void main() {
     vec3 specularColor = texture(textureGroups[0].specularMap, sampleCoords).rgb;
 
     vec3 diffuseContrib = diffuseColor * max(dot(tangentSunDir, normal), 0.0) * lights[0].diffuseColor;
-    vec3 directionToViewer = normalize(tangentViewPos - tangentFragPos);
+    vec3 directionToViewerUnnorm = tangentViewPos - tangentFragPos;
+    vec3 directionToViewer = normalize(directionToViewerUnnorm);
     vec3 viewerLightMidpoint = normalize(directionToViewer + tangentSunDir);
     vec3 specularContrib = specularColor *
                                  pow(max(dot(viewerLightMidpoint, normal), 0.0), 
                                      textureGroups[0].shininess) *
                                  lights[0].specularColor;
     vec3 prelimColor = min(diffuseContrib + specularContrib + ambientContrib, 1.0);
-    color = vec4(prelimColor, 1.0);
+
+    float distToViewer = length(directionToViewerUnnorm);
+    float fogDensity = 0.05f;
+    float fogFactor = 1.0 / exp(distToViewer * fogDensity);
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+
+    vec3 fogColor = vec3(135.f/255.0f, 206.f/255.0f, 250.f/255.0f);
+    // mix function fogColor⋅(1−fogFactor) + lightColor⋅fogFactor
+    vec3 finalColor = mix(fogColor, prelimColor, fogFactor);
+
+    color = vec4(finalColor, 1.0);
 }

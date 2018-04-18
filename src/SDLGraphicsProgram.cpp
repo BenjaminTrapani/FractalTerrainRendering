@@ -39,7 +39,7 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
         //Create window
-        gWindow = SDL_CreateWindow("Lab",
+        gWindow = SDL_CreateWindow("Fractal Terrain",
                                    SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED,
                                    screenWidth,
@@ -115,7 +115,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
 
-    terrain = std::make_shared<FractalTerrain::Terrain>(2, 2, 64, shader);
+    terrain = std::make_shared<FractalTerrain::Terrain>(2, 2, 128, shader);
     lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
     const glm::vec3 ones(1.0, 1.0, 1.0);
     lights->addLight(glm::vec3(0.0, 1.0, 0.0), ones, ones, ones);
@@ -186,7 +186,7 @@ void SDLGraphicsProgram::render() {
     // Initialize clear color
     // This is the background of the screen.
     glViewport(0, 0, screenWidth, screenHeight);
-    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClearColor(135.f/255.0f, 206.f/255.0f, 250.f/255.0f, 1.f);
 
     //Clear color buffer and Depth Buffer
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
