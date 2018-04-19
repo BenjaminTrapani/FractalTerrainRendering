@@ -10,7 +10,8 @@
 class TerrainPatch {
 friend class Terrain;
 public:
-    TerrainPatch(unsigned int patchWidth, unsigned int patchHeight);
+    TerrainPatch(unsigned int patchWidth, unsigned int patchHeight,
+                  const glm::vec3& position, float scale);
     void bindVertexBuffer();
     void bindIndexBuffer();
     GLsizei getIndexBufferCount() const;
@@ -37,6 +38,7 @@ private:
     GLuint ibo;
     glm::vec3 position;
     glm::mat4 modelToWorldTransform;
+    float scale;
 
     std::shared_ptr<VertexIndexBufferData> generateVertexIndexBuffers();
     void genBuffers();

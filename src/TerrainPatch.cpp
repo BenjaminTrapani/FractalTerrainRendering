@@ -4,6 +4,7 @@
 
 #include "TerrainPatch.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/transform.hpp"
 
 // Generate a patchWidth x patchHeight size set of vertices with triangulations in index buffer.
 // Vertices have an origin at x = y = z = 0 and span along x and z from [0, 0] -> [1, 1]
@@ -42,7 +43,9 @@ std::shared_ptr<TerrainPatch::VertexIndexBufferData> TerrainPatch::generateVerte
 };
 
 void TerrainPatch::updateTransform() {
-    modelToWorldTransform = glm::translate(glm::mat4(), position);
+    const glm::mat4 translation = glm::translate(position);
+    const glm::mat4 scaleMat = glm::scale(glm::vec3(scale, scale, scale));
+    modelToWorldTransform = translation * scaleMat;
 }
 
 void TerrainPatch::setPosition(const glm::vec3& pos) {
@@ -67,14 +70,16 @@ void TerrainPatch::genBuffers() {
                  terrainData->indexData->data(), GL_STATIC_DRAW);
 }
 
-TerrainPatch::TerrainPatch(unsigned int ipatchWidth, unsigned int ipatchHeight):
+TerrainPatch::TerrainPatch(unsigned int ipatchWidth, unsigned int ipatchHeight, 
+                           const glm::vec3& position, float scl):
         patchWidth(ipatchWidth), patchHeight(ipatchHeight),
         // Two triangles per square and
         // (width - 1) * (height - 1) squares for a width x height set of vertices.
         // 3 vertices per triangle.
         indexBufferSize(3 * (patchHeight - 1) * (patchWidth - 1) * 2) {
     genBuffers();
-    setPosition(glm::vec3());
+    scale = scl;
+    setPosition(position);
 }
 
 void TerrainPatch::bindVertexBuffer() {

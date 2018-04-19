@@ -22,7 +22,7 @@ float computeTessFactor(vec2 screenV1, vec2 screenV2) {
     // hard-code to 16 pixels per tess factor for now
     // Need a function that yields high values for large differences and 
     // small values for smaller differences
-    return clamp(distance(screenV1, screenV2) / 16.0, 1.0, 4.0);
+    return clamp(distance(screenV1, screenV2) / 32.0f, 1.0, 4.0f);
 }
 
 bool isVertexOffscreen(vec4 vert) {
@@ -58,7 +58,7 @@ void main() {
         gl_TessLevelOuter[1] = tessFac1;
         gl_TessLevelOuter[2] = tessFac2;
 
-        float averageTessFac = (tessFac0 + tessFac1 + tessFac2) / 3.0;
-        gl_TessLevelInner[0] = averageTessFac;
+        float computedTessLevelInner = min(min(tessFac0, tessFac1), tessFac2);
+        gl_TessLevelInner[0] = computedTessLevelInner;
     }
 }

@@ -20,6 +20,7 @@ namespace FractalTerrain {
         Terrain(unsigned int patchWidth,
                 unsigned int patchHeight,
                 unsigned int patchTileSize,
+                float patchScale,
                 unsigned int shaderID);
         void updatePatchPositions(const glm::vec3& cameraPos);
         void bindTextures();
@@ -100,7 +101,10 @@ namespace FractalTerrain {
         TerrainPatchGrid_t terrainPatches;
         const double halfPatchTileSize;
         std::vector<std::shared_ptr<TextureGroup>> textures;
-
+        glm::vec2 quadSideLength;
+        float terrainScale;
+        
+        float snapToNearest(float input, float interval);
         void initTextures(unsigned int shaderID);
     };
 }
