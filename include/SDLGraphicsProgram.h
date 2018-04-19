@@ -52,7 +52,6 @@ public:
     unsigned int CreateShader(const std::string& vertexShaderSource,
                               const std::string& tessControlSource,
                               const std::string& tessEvalSource,
-                              const std::string& geometryShaderSource,
                               const std::string& fragmentShaderSource);
     unsigned int CompileShader(unsigned int type, const std::string& source);
 
