@@ -58,9 +58,9 @@ void main() {
     float fogFactor = 1.0 / exp(distToViewer * fogDensity);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
 
-    vec3 fogColor = vec3(135.f/255.0f, 206.f/255.0f, 250.f/255.0f);
-    // mix function fogColor⋅(1−fogFactor) + lightColor⋅fogFactor
+    vec3 fogColor = vec3(135.f/255.0f, 206.f/255.0f, 250.f/255.0f) * 0.5;
     vec3 finalColor = mix(fogColor, prelimColor, fogFactor);
+    //vec3 finalColor = prelimColor;
 
     color = vec4(finalColor, 1.0);
     //color = vec4(1.0, 0.0, 0.0, 1.0);

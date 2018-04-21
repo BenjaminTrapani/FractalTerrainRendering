@@ -231,6 +231,7 @@ void SDLGraphicsProgram::rotateSun(const float angle, const glm::vec3& axis) {
   auto& sun = lights->getSun();
   const glm::vec3& prevSunLocation = sun.getPosition();
   const glm::vec3 rotatedLoc = glm::rotate(prevSunLocation, angle, axis);
+  std::cout << "rotated sun vec: " << rotatedLoc.x << ", " << rotatedLoc.y << ", " << rotatedLoc.z << std::endl;
   sun.setPosition(rotatedLoc);
 }
 

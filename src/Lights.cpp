@@ -83,7 +83,8 @@ void Lights::Light::setPosition(const glm::vec3& iposition) {
 }
 
 void Lights::Light::bind() {
-    glUniform3fv(positionLoc, 1, &position[0]);
+    glm::vec3 lightPosForShaders = glm::vec3(position.x, position.z, position.y);
+    glUniform3fv(positionLoc, 1, &lightPosForShaders[0]);
     glUniform3fv(ambientColorLoc, 1, &ambientColor[0]);
     glUniform3fv(specularColorLoc, 1, &specularColor[0]);
     glUniform3fv(diffuseColorLoc, 1, &diffuseColor[0]);

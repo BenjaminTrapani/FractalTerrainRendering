@@ -44,13 +44,13 @@ mat3 getTBN(vec3 trianglePoints[3]) {
     vec3 bitangent;
 
     tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-    tangent.y = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-    tangent.z = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+    tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+    tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
     tangent = normalize(tangent);
 
     bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-    bitangent.y = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-    bitangent.z = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+    bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+    bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
     bitangent = normalize(bitangent);
 
     vec3 normalVec = cross(tangent, bitangent);
@@ -67,24 +67,24 @@ void main() {
     posFromBary.y = getHeightAt(posFromBary.xz);
 
     // estimate tbn here from 1 triangle surrounding posFromPary
-    float triangleSideLen = 0.001f;
+    float triangleSideLen = 0.1f;
     float tan30 = 0.5773503f;
     float sin30 = 0.5;
     float x = tan30 * (triangleSideLen / 2);
     float h = x / sin30;
 
-    vec3 bottomLeft = vec3(posFromBary.x - triangleSideLen / 2, 0, posFromBary.z - x);
-    vec3 bottomRight = vec3(posFromBary.x + triangleSideLen / 2, 0, posFromBary.z - x);
-    vec3 topCenter = vec3(posFromBary.x, 0, posFromBary.z + h);
+    vec3 topLeft = vec3(posFromBary.x - triangleSideLen / 2, 0, posFromBary.z - x);
+    vec3 topRight = vec3(posFromBary.x + triangleSideLen / 2, 0, posFromBary.z - x);
+    vec3 bottomCenter = vec3(posFromBary.x, 0, posFromBary.z + h);
 
-    bottomLeft.y = getHeightAt(bottomLeft.xz);
-    bottomRight.y = getHeightAt(bottomRight.xz);
-    topCenter.y = getHeightAt(topCenter.xz);
+    topLeft.y = getHeightAt(topLeft.xz);
+    topRight.y = getHeightAt(topRight.xz);
+    bottomCenter.y = getHeightAt(bottomCenter.xz);
 
     vec3 allVerts[3];
-    allVerts[0] = bottomLeft;
-    allVerts[1] = bottomRight;
-    allVerts[2] = topCenter;
+    allVerts[0] = bottomCenter;
+    allVerts[1] = topRight;
+    allVerts[2] = topLeft;
     mat3 tangentToWorld = getTBN(allVerts);
     mat3 worldToTangent = transpose(tangentToWorld);
 
