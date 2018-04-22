@@ -56,7 +56,7 @@ void main() {
         gl_TessLevelOuter[1] = tessFac1;
         gl_TessLevelOuter[2] = tessFac2;
 
-        float computedTessLevelInner = min(min(tessFac0, tessFac1), tessFac2);
+        float computedTessLevelInner = (tessFac0 + tessFac1 + tessFac2) / 3.0;
         gl_TessLevelInner[0] = computedTessLevelInner;
     }
 }
