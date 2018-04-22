@@ -53,11 +53,6 @@ void Terrain::bindTextures() {
     }
 }
 
-float Terrain::snapToNearest(const float input, const float interval) {
-  const float numIntervalsInInput = input / interval;
-  return floorf(numIntervalsInInput) * interval;
-}
-
 void Terrain::updatePatchPositions(const glm::vec3& cameraPos) {
     // Only consider camera x and z location.
     // For each patch:

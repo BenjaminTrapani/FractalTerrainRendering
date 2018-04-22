@@ -114,7 +114,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[0] = std::make_shared<SimpleModel<OBJFileReader_t>>(cubeData);
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
-
+    
     terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 9, 8.0f, shader);
     lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
     const glm::vec3 ones(1.0, 1.0, 1.0);
@@ -177,7 +177,6 @@ void SDLGraphicsProgram::update() {
 // Render
 // The render function gets called once per loop
 void SDLGraphicsProgram::render() {
-    // Disable depth test and enable face culling.
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_TEXTURE_2D);
