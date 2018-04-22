@@ -28,10 +28,22 @@ Terrain::Terrain(unsigned int patchWidth, unsigned int patchHeight,
 
 void Terrain::initTextures(const unsigned int shaderID) {
     unsigned int slotIndex = 0;
+
+    auto grassyRocky = std::make_shared<TextureGroup>("grass_rocky_d.ppm", "grass_rocky_n.ppm",
+                                                      "grass_rocky_s.ppm", 0.1, 1.0, slotIndex, shaderID);
+    textures.push_back(grassyRocky);
+    ++slotIndex;
+
     auto desertMountainGroup = std::make_shared<TextureGroup>("desert_mntn_d.ppm", "desert_mntn_n.ppm",
                                                               "desert_mntn_s.ppm", 0.1, 1.0,
                                                               slotIndex, shaderID);
     textures.push_back(desertMountainGroup);
+    ++slotIndex;
+
+    auto snowMountainGroup = std::make_shared<TextureGroup>("snow_mntn2_d.ppm", "snow_mntn2_n.ppm",
+                                                              "snow_mntn2_s.ppm", 0.1, 4.0,
+                                                              slotIndex, shaderID);
+    textures.push_back(snowMountainGroup);
     ++slotIndex;
 }
 

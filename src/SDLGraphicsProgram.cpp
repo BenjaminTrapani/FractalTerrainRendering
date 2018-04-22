@@ -115,7 +115,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
 
-    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 5, 8.0f, shader);
+    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 9, 8.0f, shader);
     lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
     const glm::vec3 ones(1.0, 1.0, 1.0);
     lights->addLight(glm::vec3(0.0, 1.0, 0.0), ones, ones, ones);
@@ -231,7 +231,7 @@ void SDLGraphicsProgram::rotateSun(const float angle, const glm::vec3& axis) {
   auto& sun = lights->getSun();
   const glm::vec3& prevSunLocation = sun.getPosition();
   const glm::vec3 rotatedLoc = glm::rotate(prevSunLocation, angle, axis);
-  std::cout << "rotated sun vec: " << rotatedLoc.x << ", " << rotatedLoc.y << ", " << rotatedLoc.z << std::endl;
+  //std::cout << "rotated sun vec: " << rotatedLoc.x << ", " << rotatedLoc.y << ", " << rotatedLoc.z << std::endl;
   sun.setPosition(rotatedLoc);
 }
 
