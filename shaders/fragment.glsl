@@ -23,7 +23,7 @@ struct Light {
 };
 
 // Order texture groups in increasing order by height. Blend between colors at indices
-uniform TextureGroup textureGroups[3];
+uniform TextureGroup textureGroups[5];
 uniform Light lights[1]; // lights[0] is reserved for the sun, so its position is ignored
 uniform vec3 ambientLightColor;
 
@@ -54,7 +54,39 @@ vec3 getColorFromGroupIdx(int textureGroupIdx) {
     return prelimColor;
 }
 
-void main() {
+vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param) {
+    vec3 nextHorizColor;
+    float cyclePeriod = 100.0f;
+    float halfCyclePeriod = cyclePeriod / 2.0f;
+    float blendSize = 0.75f * halfCyclePeriod; //blend for upper .25
+    float cyclePos = mod(param, cyclePeriod);
+    vec3 flooredColor;
+
+    //0 and 1 should cycle to 3 and 4
+    bool isOnAlternateNow = cyclePos >= halfCyclePeriod && flooredTextureGroupIdx < 2;
+    if (isOnAlternateNow) {
+      flooredColor = getColorFromGroupIdx(flooredTextureGroupIdx + 3);
+    }else {
+      flooredColor = getColorFromGroupIdx(flooredTextureGroupIdx);
+    }
+    
+    float halfCyclePos = mod(param, halfCyclePeriod);
+    if (flooredTextureGroupIdx < 2 && halfCyclePos >= blendSize) {
+       vec3 destColor;
+       if(isOnAlternateNow) {
+          destColor = getColorFromGroupIdx(flooredTextureGroupIdx);
+       } else {
+          destColor = getColorFromGroupIdx(flooredTextureGroupIdx + 3);
+       }
+       float blendFact = (halfCyclePos - blendSize) / (halfCyclePeriod - blendSize);
+       nextHorizColor = mix(flooredColor, destColor, blendFact);
+   } else {
+      nextHorizColor = flooredColor;
+    }
+    return nextHorizColor;
+}
+
+vec3 getBlendedColorAtPoint() {
     // 17.25 is the max offset of the terrain height, 2 is the number of texture groups.
     float terrainHeightDiff = 50.0;
     float halfTerrainHeightDiff = terrainHeightDiff / 2;
@@ -62,21 +94,30 @@ void main() {
 
     float rawTextureGroupIdx = ((fragPos.y + halfTerrainHeightDiff) / terrainHeightDiff) * numTextureGroups;
     int flooredTextureGroupIdx = int(rawTextureGroupIdx);
-    vec3 flooredColor = getColorFromGroupIdx(flooredTextureGroupIdx);
+
+    vec3 flooredColor = (getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.x)
+                        + getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.z)) / 2;
     
-    vec3 blendedColor = flooredColor;
-    // At 0.9, start blending the textures linearly. Can't be the largest texture group.
+    vec3 blendedColor;
+    // At blendSize, start blending the textures linearly. Can't be the largest texture group.
     float blendSize = 0.75;
     if (rawTextureGroupIdx - flooredTextureGroupIdx > blendSize && rawTextureGroupIdx + 1 < numTextureGroups) {
-      vec3 nextColor = getColorFromGroupIdx(flooredTextureGroupIdx + 1);
+      vec3 nextColor = (getBlendedColorForHorizontal(flooredTextureGroupIdx + 1, fragPos.x)
+                        + getBlendedColorForHorizontal(flooredTextureGroupIdx + 1, fragPos.z)) / 2;
       float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + blendSize)) / (1 - blendSize);
       blendedColor = mix(flooredColor, nextColor, blendFactor);
+    } else {
+      blendedColor = flooredColor;
     }
+    return blendedColor;
+}
+
+void main() {
+    vec3 blendedColor = getBlendedColorAtPoint();
 
     vec3 directionToViewerUnnorm = tangentViewPos - tangentFragPos;
     float distToViewer = length(directionToViewerUnnorm);
     float fogDensity = 0.05f;
-
     vec3 skyColor = vec3(94.f/255.0f, 100.f/255.0f, 100.f/255.0f);
     float fogFactor = 1.0 / exp((distToViewer - 20) * fogDensity);
     fogFactor = clamp(fogFactor, 0.0, 1.0);

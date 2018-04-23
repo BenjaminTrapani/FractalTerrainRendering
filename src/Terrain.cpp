@@ -35,7 +35,7 @@ void Terrain::initTextures(const unsigned int shaderID) {
     ++slotIndex;
 
     auto desertMountainGroup = std::make_shared<TextureGroup>("desert_mntn_d.ppm", "desert_mntn_n.ppm",
-                                                              "desert_mntn_s.ppm", 0.1, 1.0,
+                                                              "desert_mntn_s.ppm", 0.1, 0.8,
                                                               slotIndex, shaderID);
     textures.push_back(desertMountainGroup);
     ++slotIndex;
@@ -44,6 +44,18 @@ void Terrain::initTextures(const unsigned int shaderID) {
                                                               "snow_mntn2_s.ppm", 0.1, 4.0,
                                                               slotIndex, shaderID);
     textures.push_back(snowMountainGroup);
+    ++slotIndex;
+
+    auto groundFerns = std::make_shared<TextureGroup>("ground_ferns_d.ppm", "ground_ferns_n.ppm",
+                                                              "ground_ferns_s.ppm", 0.1, 1.0,
+                                                              slotIndex, shaderID);
+    textures.push_back(groundFerns);
+    ++slotIndex;
+
+    auto jungleMntn = std::make_shared<TextureGroup>("jungle_mntn_d.ppm", "jungle_mntn_n.ppm",
+                                                              "jungle_mntn_s.ppm", 0.1, 2.0,
+                                                              slotIndex, shaderID);
+    textures.push_back(jungleMntn);
     ++slotIndex;
 }
 
