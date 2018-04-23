@@ -117,7 +117,7 @@ void main() {
 
     vec3 directionToViewerUnnorm = tangentViewPos - tangentFragPos;
     float distToViewer = length(directionToViewerUnnorm);
-    float fogDensity = 0.05f;
+    float fogDensity = 0.04f;
     vec3 skyColor = vec3(94.f/255.0f, 100.f/255.0f, 100.f/255.0f);
     float fogFactor = 1.0 / exp((distToViewer - 20) * fogDensity);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
