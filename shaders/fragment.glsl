@@ -66,7 +66,7 @@ void main() {
     
     vec3 blendedColor = flooredColor;
     // At 0.9, start blending the textures linearly. Can't be the largest texture group.
-    float blendSize = 0.65;
+    float blendSize = 0.5;
     if (rawTextureGroupIdx - flooredTextureGroupIdx > blendSize && rawTextureGroupIdx + 1 < numTextureGroups) {
       vec3 nextColor = getColorFromGroupIdx(flooredTextureGroupIdx + 1);
       float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + blendSize)) / (1 - blendSize);
@@ -82,5 +82,6 @@ void main() {
     vec3 fogColor = vec3(135.f/255.0f, 206.f/255.0f, 250.f/255.0f) * 0.5;
     vec3 finalColor = mix(fogColor, blendedColor, fogFactor);
 
-    color = vec4(finalColor, 1.0);
+    //color = vec4(finalColor, 1.0);
+    color = vec4(0, 0, 0, 1.0);
 }
