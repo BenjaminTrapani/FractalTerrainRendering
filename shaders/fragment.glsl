@@ -56,7 +56,7 @@ vec3 getColorFromGroupIdx(int textureGroupIdx) {
 
 void main() {
     // 17.25 is the max offset of the terrain height, 2 is the number of texture groups.
-    float terrainHeightDiff = 17.25;
+    float terrainHeightDiff = 50.0;
     float halfTerrainHeightDiff = terrainHeightDiff / 2;
     int numTextureGroups = 3;
 
@@ -66,7 +66,7 @@ void main() {
     
     vec3 blendedColor = flooredColor;
     // At 0.9, start blending the textures linearly. Can't be the largest texture group.
-    float blendSize = 0.5;
+    float blendSize = 0.75;
     if (rawTextureGroupIdx - flooredTextureGroupIdx > blendSize && rawTextureGroupIdx + 1 < numTextureGroups) {
       vec3 nextColor = getColorFromGroupIdx(flooredTextureGroupIdx + 1);
       float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + blendSize)) / (1 - blendSize);
@@ -76,12 +76,26 @@ void main() {
     vec3 directionToViewerUnnorm = tangentViewPos - tangentFragPos;
     float distToViewer = length(directionToViewerUnnorm);
     float fogDensity = 0.05f;
-    float fogFactor = 1.0 / exp(distToViewer * fogDensity);
+
+    vec3 skyColor = vec3(94.f/255.0f, 100.f/255.0f, 100.f/255.0f);
+    float fogFactor = 1.0 / exp((distToViewer - 20) * fogDensity);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
+    vec3 finalColor = mix(skyColor, blendedColor, fogFactor);
+    /*vec3 fogColor = skyColor * 0.5;
 
-    vec3 fogColor = vec3(135.f/255.0f, 206.f/255.0f, 250.f/255.0f) * 0.5;
-    vec3 finalColor = mix(fogColor, blendedColor, fogFactor);
+    vec3 finalColor;
+    if (distToViewer < 60.0) {
+      float fogFactor = 1.0 / exp(distToViewer * fogDensity);
+      fogFactor = clamp(fogFactor, 0.0, 1.0);
+      finalColor = mix(fogColor, blendedColor, fogFactor);
+    } else {
+      //float scaledDistToViewer = (distToViewer - 50.0) / 20.0;
+      //finalColor = mix(skyColor, fogColor, 1.0 - clamp(scaledDistToViewer, 0.0, 1.0));
+      float fogFactor = 1.0 / exp((distToViewer - 60.0) * fogDensity * 10);
+      fogFactor = clamp(fogFactor, 0.0, 1.0);
+      finalColor = mix(skyColor, fogColor, fogFactor);
+    }*/
 
-    //color = vec4(finalColor, 1.0);
-    color = vec4(0, 0, 0, 1.0);
+    color = vec4(finalColor, 1.0);
+    //color = vec4(0, 0, 0, 1.0);
 }

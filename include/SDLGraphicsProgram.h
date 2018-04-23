@@ -105,7 +105,6 @@ private:
 
     //Uniform locations
     GLint viewProjID;
-    GLint screenSizeID;
     GLint terrainModelToWorldID;
     GLint cameraPosID;
 

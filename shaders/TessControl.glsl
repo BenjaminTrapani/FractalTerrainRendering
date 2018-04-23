@@ -7,20 +7,16 @@ out vec3 TEworldPos[];
 
 uniform mat4 viewProj;
 uniform vec2 screenSize;
+uniform vec3 cameraPos;
 
 vec4 projectVert(vec3 value) {
     vec4 projected = viewProj * vec4(value, 1.0);
     return projected / projected.w;
 }
-vec2 projectToScreen(vec4 projectedVert) {
-    vec2 resultInXYPlane = vec2(projectedVert);
-    resultInXYPlane += 1.0; //Now in range 0 to 2
-    return resultInXYPlane * (screenSize * 0.5);
-}
 
-float computeTessFactor(vec2 screenV1, vec2 screenV2) {
+float computeTessFactor(float d1, float d2) {
     // hard-code to 32 pixels per tess factor for now
-    return clamp(distance(screenV1, screenV2) / 32.0f, 1.0, 64.0f);
+    return 128 / (d1 + d2);
 }
 
 bool isVertexOffscreen(vec4 vert) {
@@ -45,20 +41,17 @@ void main() {
 
           gl_TessLevelInner[0] = 0;
       } else {
-          vec2 vert0Screen = projectToScreen(projectedVert0);
-          vec2 vert1Screen = projectToScreen(projectedVert1);
-          vec2 vert2Screen = projectToScreen(projectedVert2);
+        float distToVert0 = distance(cameraPos, TCworldPos[0]);
+        float distToVert1 = distance(cameraPos, TCworldPos[1]);
+        float distToVert2 = distance(cameraPos, TCworldPos[2]);
 
-          float tessFac0 = computeTessFactor(vert1Screen, vert2Screen);
-          float tessFac1 = computeTessFactor(vert2Screen, vert0Screen);
-          float tessFac2 = computeTessFactor(vert0Screen, vert1Screen);
-
-          gl_TessLevelOuter[0] = tessFac0;
-          gl_TessLevelOuter[1] = tessFac1;
-          gl_TessLevelOuter[2] = tessFac2;
-
-          float computedTessLevelInner = (tessFac0 + tessFac1 + tessFac2) / 3.0;
-          gl_TessLevelInner[0] = computedTessLevelInner;
+        float tl0 = computeTessFactor(distToVert1, distToVert2);
+        float tl1 = computeTessFactor(distToVert2, distToVert0);
+        float tl2 = computeTessFactor(distToVert0, distToVert1);
+        gl_TessLevelOuter[0] = tl0;
+        gl_TessLevelOuter[1] = tl1;
+        gl_TessLevelOuter[2] = tl2;
+        gl_TessLevelInner[0] = (tl0 + tl1 + tl2) / 3.0;
       }
     }
 }

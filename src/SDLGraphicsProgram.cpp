@@ -115,7 +115,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
     
-    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 9, 8.0f, shader);
+    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 19, 14.0f, shader);
     lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
     const glm::vec3 ones(1.0, 1.0, 1.0);
     lights->addLight(glm::vec3(0.0, 1.0, 0.0), ones, ones, ones);
@@ -141,12 +141,6 @@ bool SDLGraphicsProgram::initGL() {
     viewProjID = glGetUniformLocation(shader, "viewProj");
     if (viewProjID < 0) {
         std::cerr << "Unable to find viewProj uniform" << std::endl;
-        return false;
-    }
-
-    screenSizeID = glGetUniformLocation(shader, "screenSize");
-    if (screenSizeID < 0) {
-        std::cerr << "Unable to find screenSize uniform" << std::endl;
         return false;
     }
 
@@ -184,7 +178,7 @@ void SDLGraphicsProgram::render() {
     // Initialize clear color
     // This is the background of the screen.
     glViewport(0, 0, screenWidth, screenHeight);
-    glClearColor(135.f/255.0f, 206.f/255.0f, 250.f/255.0f, 1.f);
+    glClearColor(94.f/255.0f, 100.f/255.0f, 100.f/255.0f, 1.f);
 
     //Clear color buffer and Depth Buffer
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -199,7 +193,6 @@ void SDLGraphicsProgram::render() {
 
     // Transfer data to gpu uniforms
     glUniformMatrix4fv(viewProjID, 1, GL_FALSE, &viewProj[0][0]);
-    glUniform2f(screenSizeID, screenWidth, screenHeight);
     glUniform3fv(cameraPosID, 1, &cameraPos[0]);
 
     glVertexAttribPointer(0,  // Attribute 0, which will match layout in shader
