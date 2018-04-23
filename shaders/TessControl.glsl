@@ -30,33 +30,35 @@ bool isVertexOffscreen(vec4 vert) {
 void main() {
     TEworldPos[gl_InvocationID] = TCworldPos[gl_InvocationID];
 
-    vec4 projectedVert0 = projectVert(TCworldPos[0]);
-    vec4 projectedVert1 = projectVert(TCworldPos[1]);
-    vec4 projectedVert2 = projectVert(TCworldPos[2]);
+    if (gl_InvocationID == 0) {
+      vec4 projectedVert0 = projectVert(TCworldPos[0]);
+      vec4 projectedVert1 = projectVert(TCworldPos[1]);
+      vec4 projectedVert2 = projectVert(TCworldPos[2]);
 
-    bvec3 areVertsOffscreen = bvec3(isVertexOffscreen(projectedVert0),
+      bvec3 areVertsOffscreen = bvec3(isVertexOffscreen(projectedVert0),
                                     isVertexOffscreen(projectedVert1),
                                     isVertexOffscreen(projectedVert2));
-    if (all(areVertsOffscreen)) {
-        gl_TessLevelOuter[0] = 0;
-        gl_TessLevelOuter[1] = 0;
-        gl_TessLevelOuter[2] = 0;
+      if (all(areVertsOffscreen)) {
+          gl_TessLevelOuter[0] = 0;
+          gl_TessLevelOuter[1] = 0;
+          gl_TessLevelOuter[2] = 0;
 
-        gl_TessLevelInner[0] = 0;
-    } else {
-        vec2 vert0Screen = projectToScreen(projectedVert0);
-        vec2 vert1Screen = projectToScreen(projectedVert1);
-        vec2 vert2Screen = projectToScreen(projectedVert2);
+          gl_TessLevelInner[0] = 0;
+      } else {
+          vec2 vert0Screen = projectToScreen(projectedVert0);
+          vec2 vert1Screen = projectToScreen(projectedVert1);
+          vec2 vert2Screen = projectToScreen(projectedVert2);
 
-        float tessFac0 = computeTessFactor(vert1Screen, vert2Screen);
-        float tessFac1 = computeTessFactor(vert2Screen, vert0Screen);
-        float tessFac2 = computeTessFactor(vert0Screen, vert1Screen);
+          float tessFac0 = computeTessFactor(vert1Screen, vert2Screen);
+          float tessFac1 = computeTessFactor(vert2Screen, vert0Screen);
+          float tessFac2 = computeTessFactor(vert0Screen, vert1Screen);
 
-        gl_TessLevelOuter[0] = tessFac0;
-        gl_TessLevelOuter[1] = tessFac1;
-        gl_TessLevelOuter[2] = tessFac2;
+          gl_TessLevelOuter[0] = tessFac0;
+          gl_TessLevelOuter[1] = tessFac1;
+          gl_TessLevelOuter[2] = tessFac2;
 
-        float computedTessLevelInner = (tessFac0 + tessFac1 + tessFac2) / 3.0;
-        gl_TessLevelInner[0] = computedTessLevelInner;
+          float computedTessLevelInner = (tessFac0 + tessFac1 + tessFac2) / 3.0;
+          gl_TessLevelInner[0] = computedTessLevelInner;
+      }
     }
 }
