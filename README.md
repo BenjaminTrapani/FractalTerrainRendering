@@ -13,6 +13,7 @@
   * Tesselation based on screen coordinates: http://codeflow.org/entries/2010/nov/07/opengl-4-tessellation/
   * Terrain assets: http://nobiax.deviantart.com (see about.txt in assets directory)
   * Fog effect: http://in2gpu.com/2014/07/22/create-fog-shader/
+  * Noise2D glsl implementation: https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
 * (Optional) What was the most interesting part of the assignment? How would you improve this assignment?
   Seeing the result of loading the complex bunny model was really cool. Adding
   functionality for moving around the resulting scene would have been helpful in diagnosing issues with
