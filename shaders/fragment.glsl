@@ -86,10 +86,10 @@ vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param) {
 vec3 getBlendedColorAtPoint() {
     // 17.25 is the max offset of the terrain height, 2 is the number of texture groups.
     float terrainHeightDiff = 50.0;
-    float halfTerrainHeightDiff = terrainHeightDiff / 2;
+    float terrainHeightBias = terrainHeightDiff * 0.75;
     int numTextureGroups = 3;
 
-    float rawTextureGroupIdx = ((fragPos.y + halfTerrainHeightDiff) / terrainHeightDiff) * numTextureGroups;
+    float rawTextureGroupIdx = max(((fragPos.y + terrainHeightBias) / terrainHeightDiff) * numTextureGroups, 0);
     int flooredTextureGroupIdx = int(rawTextureGroupIdx);
 
     vec3 flooredColor = mix(getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.x),
