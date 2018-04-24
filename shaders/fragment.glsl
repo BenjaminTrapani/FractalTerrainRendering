@@ -92,27 +92,17 @@ vec3 getBlendedColorAtPoint() {
     float rawTextureGroupIdx = ((fragPos.y + halfTerrainHeightDiff) / terrainHeightDiff) * numTextureGroups;
     int flooredTextureGroupIdx = int(rawTextureGroupIdx);
 
-    vec3 flooredColor = (getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.x));
-                        //+ getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.z)) / 2;
+    vec3 flooredColor = mix(getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.x),
+                            getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.z), 0.5);
     
     vec3 blendedColor;
     // At blendSize, start blending the textures linearly. Can't be the largest texture group.
     float blendSize = 0.9;
     float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + blendSize)) / (1 - blendSize);
     blendFactor = max(blendFactor, 0);
-    vec3 nextColor = (getBlendedColorForHorizontal(min(flooredTextureGroupIdx + 1, 4), fragPos.x));
-    //+ getBlendedColorForHorizontal(flooredTextureGroupIdx + 1, fragPos.z)) / 2;
+    vec3 nextColor = mix(getBlendedColorForHorizontal(min(flooredTextureGroupIdx + 1, 4), fragPos.x),
+                      getBlendedColorForHorizontal(flooredTextureGroupIdx + 1, fragPos.z), 0.5);
     return mix(flooredColor, nextColor, blendFactor);
-
-    /*if (rawTextureGroupIdx - flooredTextureGroupIdx > blendSize && rawTextureGroupIdx + 1 < numTextureGroups) {
-      
-                        
-      float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + blendSize)) / (1 - blendSize);
-      blendedColor = mix(flooredColor, nextColor, blendFactor);
-    } else {
-      blendedColor = flooredColor;
-    }
-    return blendedColor;*/
 }
 
 void main() {
