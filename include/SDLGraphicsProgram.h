@@ -22,16 +22,12 @@
 #include <string>
 #include <sstream>
 
-#include "OBJFileReader.hpp"
-#include "DefaultOBJReaderFunctors.h"
-#include "SimpleModel.hpp"
 #include "SimpleCamera.h"
 #include "Terrain.h"
 #include "Lights.h"
 
 // This class sets up a full graphics program
 class SDLGraphicsProgram{
-    typedef OBJFileReader<GLfloat, GLuint, DefaultOBJReaderFunctor<GLfloat>, DefaultOBJReaderFunctor<GLuint>> OBJFileReader_t;
 public:
 
     // Constructor
@@ -65,11 +61,6 @@ public:
     void getOpenGLVersionInfo();
 
 private:
-    // 0 is cube, 1 is bunny
-    std::shared_ptr<SimpleModel<OBJFileReader_t>> models[2];
-    // The model to render in the current frame
-    std::shared_ptr<SimpleModel<OBJFileReader_t>> activeModel;
-
     std::shared_ptr<FractalTerrain::Terrain> terrain;
     std::shared_ptr<FractalTerrain::Lights> lights;
 
@@ -89,7 +80,7 @@ private:
     int screenWidth;
 
     // The window we'll be rendering to
-    SDL_Window* gWindow ;
+    SDL_Window* gWindow;
     // OpenGL context
     SDL_GLContext gContext;
     // Render flag

@@ -72,8 +72,6 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
             success = false;
         }
 
-
-
         loadAssets();
 
         // Set initial mouse location to be screen center
@@ -108,14 +106,6 @@ SDLGraphicsProgram::~SDLGraphicsProgram() {
 }
 
 void SDLGraphicsProgram::loadAssets() {
-    OBJFileReader_t reader("cube.obj");
-    auto cubeData = reader.loadData();
-    reader.setObjPath("monkey.obj");
-    auto bunnyData = reader.loadData();
-    models[0] = std::make_shared<SimpleModel<OBJFileReader_t>>(cubeData);
-    models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
-    activeModel = models[0];
-    
     terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 19, 56.0f, shader);
     lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
     const glm::vec3 ones(1.0, 1.0, 1.0);
