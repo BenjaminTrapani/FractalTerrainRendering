@@ -27,6 +27,7 @@ Terrain::Terrain(unsigned int patchWidth, unsigned int patchHeight,
 }
 
 void Terrain::initTextures(const unsigned int shaderID) {
+    // Setup detail map
     unsigned int slotIndex = 0;
 
     auto grassyRocky = std::make_shared<TextureGroup>("grass_rocky_d.ppm", "grass_rocky_n.ppm",
@@ -57,9 +58,18 @@ void Terrain::initTextures(const unsigned int shaderID) {
                                                               slotIndex, shaderID);
     textures.push_back(jungleMntn);
     ++slotIndex;
+
+    const GLint propLoc = glGetUniformLocation(shaderID, "detailMap");
+    if (propLoc < 0) {
+        throw std::invalid_argument("Could not find uniform requested");
+    }
+    detailMapIdx = slotIndex * TextureGroup::slotsPerGroup;
+    detailMap.LoadTexture("DetailMap.ppm");
+    glUniform1i(propLoc, detailMapIdx);
 }
 
 void Terrain::bindTextures() {
+    detailMap.Bind(detailMapIdx);
     for (auto pTextureGroup : textures) {
         pTextureGroup->Bind();
     }

@@ -15,6 +15,8 @@ struct TextureGroup {
     float shininess;
 };
 
+uniform sampler2D detailMap;
+
 struct Light {
     // All light color components should be between 0 and 1.
     vec3 ambientColor;
@@ -29,9 +31,7 @@ uniform vec3 ambientLightColor;
 
 out vec4 color;
 
-vec3 getColorFromGroupIdx(int textureGroupIdx) {
-    vec2 sampleCoords = fragPos.xz;
-
+vec3 getColorForGroupIndexAndCoords(int textureGroupIdx, vec2 sampleCoords) {
     vec3 ambientContrib = ambientLightColor * vec3(textureGroups[textureGroupIdx].ambientFac,
                                                     textureGroups[textureGroupIdx].ambientFac,
                                                     textureGroups[textureGroupIdx].ambientFac);
@@ -52,6 +52,18 @@ vec3 getColorFromGroupIdx(int textureGroupIdx) {
                                  lights[0].specularColor;
     vec3 prelimColor = min(diffuseContrib + specularContrib + ambientContrib, 1.0);
     return prelimColor;
+}
+
+vec3 getColorFromGroupIdx(int textureGroupIdx) {
+    vec2 sampleCoordsHigh = fragPos.xz / 8.0;
+    vec2 sampleCoordsLow = fragPos.xz;
+    vec3 longColor = getColorForGroupIndexAndCoords(textureGroupIdx, sampleCoordsHigh);
+    vec3 shortColor = getColorForGroupIndexAndCoords(textureGroupIdx, sampleCoordsLow);
+    vec3 perturb = shortColor * (texture(detailMap, fragPos.xz / 15.0).rgb - 0.5);
+    vec3 directionToViewerUnnorm = tangentViewPos - tangentFragPos;
+    float distToViewer = length(directionToViewerUnnorm);
+    vec3 mixedComp = mix(shortColor, longColor, clamp(distToViewer / 35, 0.0, 1.0));
+    return mixedComp;
 }
 
 vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param) {

@@ -101,6 +101,9 @@ namespace FractalTerrain {
         TerrainPatchGrid_t terrainPatches;
         const double halfPatchTileSize;
         std::vector<std::shared_ptr<TextureGroup>> textures;
+        GLint detailMapIdx;
+        Texture detailMap;
+
         glm::vec2 quadSideLength;
         float terrainScale;
         
