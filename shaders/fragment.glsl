@@ -53,13 +53,13 @@ vec3 getColorForGroupIndexAndCoords(int textureGroupIdx, vec2 sampleCoords) {
 }
 
 vec3 getColorFromGroupIdx(int textureGroupIdx) {
-    vec2 sampleCoordsHigh = fragPos.xz / 8.0;
+    vec2 sampleCoordsHigh = fragPos.xz / 16.0;
     vec2 sampleCoordsLow = fragPos.xz;
     vec3 longColor = getColorForGroupIndexAndCoords(textureGroupIdx, sampleCoordsHigh);
     vec3 shortColor = getColorForGroupIndexAndCoords(textureGroupIdx, sampleCoordsLow);
     vec3 directionToViewerUnnorm = tangentViewPos - tangentFragPos;
     float distToViewer = length(directionToViewerUnnorm);
-    vec3 mixedComp = mix(shortColor, longColor, clamp(distToViewer / 35, 0.0, 1.0));
+    vec3 mixedComp = mix(shortColor, longColor, clamp(distToViewer / 50, 0.0, 1.0));
     return mixedComp;
 }
 
