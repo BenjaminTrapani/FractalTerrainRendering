@@ -27,6 +27,9 @@ namespace FractalTerrain {
         inline const TerrainPatchGrid_t& getTerrainPatches()const {
             return terrainPatches;
         }
+        void bindVertexBuffer();
+        void bindIndexBuffer();
+        GLsizei getIndexBufferCount() const;
     private:
         class TextureGroup {
         public:
@@ -98,16 +101,28 @@ namespace FractalTerrain {
             }
         };
 
+        struct VertexIndexBufferData {
+          std::shared_ptr<std::vector<float>> vertexData;
+          std::shared_ptr<std::vector<GLuint>> indexData;
+          VertexIndexBufferData(std::shared_ptr<std::vector<float>> vData,
+                              std::shared_ptr<std::vector<GLuint>> iData): vertexData(vData), indexData(iData){}
+        };
+
         TerrainPatchGrid_t terrainPatches;
         const double halfPatchTileSize;
+        const unsigned int indexBufferSize;
+        GLuint vbo;
+        GLuint ibo;
+        unsigned int patchWidth;
+        unsigned int patchHeight;
+        
         std::vector<std::shared_ptr<TextureGroup>> textures;
-        GLint detailMapIdx;
-        Texture detailMap;
 
         glm::vec2 quadSideLength;
         float terrainScale;
         
-        float snapToNearest(float input, float interval);
         void initTextures(unsigned int shaderID);
+        std::shared_ptr<VertexIndexBufferData> generateVertexIndexBuffers();
+        void genBuffers();
     };
 }

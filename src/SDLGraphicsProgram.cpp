@@ -206,13 +206,14 @@ void SDLGraphicsProgram::render() {
     lights->bind();
 
     terrain->bindTextures();
+    terrain->bindVertexBuffer();
+    terrain->bindIndexBuffer();
     auto patchesToRender = terrain->getTerrainPatches();
+    const GLsizei indexBufferCount = terrain->getIndexBufferCount();
     for (auto terrainPatch : patchesToRender) {
         const glm::mat4 &terrainTransform = terrainPatch->getModelToWorldTransform();
         glUniformMatrix4fv(terrainModelToWorldID, 1, GL_FALSE, &terrainTransform[0][0]);
-        terrainPatch->bindVertexBuffer();
-        terrainPatch->bindIndexBuffer();
-        glDrawElements(GL_PATCHES, terrainPatch->getIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_PATCHES, indexBufferCount, GL_UNSIGNED_INT, nullptr);
     }
     // Remove our program
     glDisableVertexAttribArray(0);
