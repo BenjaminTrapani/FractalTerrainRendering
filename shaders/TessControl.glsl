@@ -15,7 +15,6 @@ vec4 projectVert(vec3 value) {
 }
 
 float computeTessFactor(float d1, float d2) {
-    // hard-code to 32 pixels per tess factor for now
     return 128 / (d1 + d2);
 }
 
