@@ -15,7 +15,7 @@ vec4 projectVert(vec3 value) {
 }
 
 float computeTessFactor(float d1, float d2) {
-    return clamp(1256 / (d1 + d2), 0, 64);
+    return clamp(1412 / (d1 + d2), 0, 64);
 }
 
 bool isVertexOffscreen(vec4 vert) {
