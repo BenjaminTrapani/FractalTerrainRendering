@@ -85,11 +85,11 @@ vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param) {
 
 vec3 getBlendedColorAtPoint() {
     // 17.25 is the max offset of the terrain height, 2 is the number of texture groups.
-    float terrainHeightDiff = 50.0;
-    float terrainHeightBias = terrainHeightDiff * 0.75;
+    float terrainHeightDiff = 150.0;
+    float terrainHeightBias = terrainHeightDiff * 0.5;
     int numTextureGroups = 3;
 
-    float rawTextureGroupIdx = max(((fragPos.y + terrainHeightBias) / terrainHeightDiff) * numTextureGroups, 0);
+    float rawTextureGroupIdx = clamp(((fragPos.y + terrainHeightBias) / terrainHeightDiff) * numTextureGroups, 0, 4);
     int flooredTextureGroupIdx = int(rawTextureGroupIdx);
 
     vec3 flooredColor = mix(getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.x),
@@ -110,7 +110,7 @@ void main() {
 
     vec3 directionToViewerUnnorm = tangentViewPos - tangentFragPos;
     float distToViewer = length(directionToViewerUnnorm);
-    float fogDensity = 0.04f;
+    float fogDensity = 0.01;//0.01f;
     vec3 skyColor = vec3(94.f/255.0f, 100.f/255.0f, 100.f/255.0f);
     float fogFactor = 1.0 / exp((distToViewer - 20) * fogDensity);
     fogFactor = clamp(fogFactor, 0.0, 1.0);

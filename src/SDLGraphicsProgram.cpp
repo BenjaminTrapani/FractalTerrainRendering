@@ -8,7 +8,8 @@
 SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHeight(h),
                                                        isWireframe(false),
                                                        camera(45, (float)w / (float)h),
-                                                       shouldMove(false) {
+                                                       shouldMove(false),
+                                                       moveSpeed(0.1f) {
     // Place camera a little in front of cube
     camera.updateTranslation(glm::vec2(0.0f, -1.0f));
 
@@ -115,7 +116,7 @@ void SDLGraphicsProgram::loadAssets() {
     models[1] = std::make_shared<SimpleModel<OBJFileReader_t>>(bunnyData);
     activeModel = models[0];
     
-    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 19, 14.0f, shader);
+    terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 19, 56.0f, shader);
     lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
     const glm::vec3 ones(1.0, 1.0, 1.0);
     lights->addLight(glm::vec3(0.0, 1.0, 0.0), ones, ones, ones);
@@ -230,7 +231,6 @@ void SDLGraphicsProgram::rotateSun(const float angle, const glm::vec3& axis) {
 
 void SDLGraphicsProgram::handleMove(SDL_Keycode keyCode) {
     // TODO make moveSpeed not depend on framerate
-    const float moveSpeed = 0.1f;
     const float rotateSpeed = 0.1f;
     shouldMove = false;
     switch(keyCode) {
@@ -296,12 +296,12 @@ bool SDLGraphicsProgram::handleKey(const SDL_Keycode keyCode) {
         }
         // Show cube
         case SDLK_1:{
-            activeModel = models[0];
+            moveSpeed += 0.05f;
             break;
         }
         // Show bunny
         case SDLK_2:{
-            activeModel = models[1];
+            moveSpeed -= 0.05f;
             break;
         }
         default:

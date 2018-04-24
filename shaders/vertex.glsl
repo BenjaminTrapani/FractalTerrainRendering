@@ -84,14 +84,14 @@ float snoise(vec2 v)
 
 // END CODE I DIDN'T WRITE
 
-// TODO don't copy-paste this from vertex.glsl but use some include or something
 float getHeightAt(vec2 xzPos) {
-    xzPos *= 0.01;
+    xzPos *= 0.02;
+    float hn1 = snoise(xzPos * 0.1);
     float h0 = snoise(xzPos * 0.5);
     float h1 = snoise(xzPos * 2);
     float h2 = snoise(xzPos * 8);
     // TODO make these factors uniforms so that they can be edited at runtime
-    return (h0 * 4.0 + h1 * 1.2 + h2 * 0.5) * 5.0 - 15.0;
+    return (hn1 * 12.0 + h0 * 8.0 + h1 * 2 + h2 * 0.5) * 2.5;
 }
 
 void main() {

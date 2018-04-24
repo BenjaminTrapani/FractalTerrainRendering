@@ -82,6 +82,7 @@ private:
     // Should we move in the current frame and if so in what direction?
     glm::vec2 movementDir;
     bool shouldMove;
+    float moveSpeed;
 
     // Screen dimension constants
     int screenHeight;

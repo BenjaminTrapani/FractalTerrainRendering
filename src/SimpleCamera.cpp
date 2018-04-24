@@ -11,7 +11,7 @@
 SimpleCamera::SimpleCamera(float fovDegrees, float aspectRatio):
         yaw((float)M_PI),
         pitch(0.0f),
-        projectionMat(glm::perspective(glm::radians(fovDegrees), aspectRatio, 0.1f, 200.0f)){
+        projectionMat(glm::perspective(glm::radians(fovDegrees), aspectRatio, 0.1f, 600.0f)){
     updateViewMatAndTransform();
 }
 
