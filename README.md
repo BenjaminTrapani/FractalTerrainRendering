@@ -33,7 +33,7 @@ the default location. From a bash terminal in the project directory, run the fol
 * Step 4: make (or open the Visual Studio solution and build if on Windows)
 * Step 5: ./FractalTerrainRendering
 
-## Controls:
+#### Controls:
 * Arrow keys: move the camera
 * Mouse: change camera direction
 * w: toggle wireframe
@@ -41,6 +41,7 @@ the default location. From a bash terminal in the project directory, run the fol
 * 2: Decrease move speed
 * q: quit
 * s/x/z/c: rotate the sun
+
 ### Deliverables
 
 * You need to commit your code to this repository.
