@@ -90,10 +90,11 @@ vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param, float
     int finalSrcOffset = min(int(flooredTextureGroupIdx + srcOffset), maxTextureGroupIndex);
     int finalDestOffset = min(int(flooredTextureGroupIdx + destOffset), maxTextureGroupIndex);
     vec3 flooredColor = getColorFromGroupIdx(finalSrcOffset, distToViewer, directionToViewer);
+    vec3 destColor = getColorFromGroupIdx(finalDestOffset, distToViewer, directionToViewer);
 
     float blendFact = (halfCyclePos - blendSize) / (halfCyclePeriod - blendSize);
     blendFact = clamp(blendFact, 0, 1);
-    vec3 destColor = getColorFromGroupIdx(finalDestOffset, distToViewer, directionToViewer);
+    
     return mix(flooredColor, destColor, blendFact);
 }
 
@@ -101,16 +102,16 @@ vec3 getBlendedColorAtPoint(float distToViewer, vec3 directionToViewer) {
     float rawTextureGroupIdx = clamp(((fragPos.y + terrainHeightBias) / terrainHeightDiff) * verticalTextureGroupCount, 
                                       0, (verticalTextureGroupCount - 1));
     int flooredTextureGroupIdx = int(rawTextureGroupIdx);
+    int nextIndex = min(flooredTextureGroupIdx + 1, verticalTextureGroupCount - 1);
     
     vec3 flooredColor = mix(getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.x, distToViewer, directionToViewer),
                             getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.z, distToViewer, directionToViewer), 0.5);
+    vec3 nextColor = mix(getBlendedColorForHorizontal(nextIndex, fragPos.x, distToViewer, directionToViewer),
+                        getBlendedColorForHorizontal(nextIndex, fragPos.z, distToViewer, directionToViewer), 0.5);
 
     float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + verticalBlendFactor)) / (1 - verticalBlendFactor);
     blendFactor = clamp(blendFactor, 0, 1);
 
-    int nextIndex = min(flooredTextureGroupIdx + 1, verticalTextureGroupCount - 1);
-    vec3 nextColor = mix(getBlendedColorForHorizontal(nextIndex, fragPos.x, distToViewer, directionToViewer),
-                        getBlendedColorForHorizontal(nextIndex, fragPos.z, distToViewer, directionToViewer), 0.5);
     return mix(flooredColor, nextColor, blendFactor);
 }
 
