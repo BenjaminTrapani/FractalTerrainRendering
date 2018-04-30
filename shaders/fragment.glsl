@@ -30,7 +30,6 @@ uniform int verticalTextureGroupCount = 3;
 uniform int horizontalCycleOffset = 3; // Since 0 + 3 = 3, 1 + 3 = 4 as required
 
 uniform Light lights[1]; // lights[0] is reserved for the sun, so its position is ignored
-uniform vec3 ambientLightColor;
 
 uniform float textureScaleLarge = 16.0f;
 uniform float textureScaleSmall = 1.0f;
@@ -49,7 +48,7 @@ uniform float fogStartDistance = 20.0f;
 out vec4 color;
 
 vec3 getColorForGroupIndexAndCoords(int textureGroupIdx, vec2 sampleCoords, vec3 directionToViewer) {
-    vec3 ambientContrib = ambientLightColor * vec3(textureGroups[textureGroupIdx].ambientFac,
+    vec3 ambientContrib = lights[0].ambientColor * vec3(textureGroups[textureGroupIdx].ambientFac,
                                                     textureGroups[textureGroupIdx].ambientFac,
                                                     textureGroups[textureGroupIdx].ambientFac);
 
@@ -94,11 +93,8 @@ vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param, float
 
     float blendFact = (halfCyclePos - blendSize) / (halfCyclePeriod - blendSize);
     blendFact = max(blendFact, 0);
-    if (blendFact > 0) {
-      vec3 destColor = getColorFromGroupIdx(finalDestOffset, distToViewer, directionToViewer);
-      return mix(flooredColor, destColor, blendFact);
-    }
-    return flooredColor;
+    vec3 destColor = getColorFromGroupIdx(finalDestOffset, distToViewer, directionToViewer);
+    return mix(flooredColor, destColor, blendFact);
 }
 
 vec3 getBlendedColorAtPoint(float distToViewer, vec3 directionToViewer) {
@@ -111,13 +107,10 @@ vec3 getBlendedColorAtPoint(float distToViewer, vec3 directionToViewer) {
 
     float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + verticalBlendFactor)) / (1 - verticalBlendFactor);
     blendFactor = max(blendFactor, 0);
-    if (blendFactor > 0){
-      int nextIndex = min(flooredTextureGroupIdx + 1, verticalTextureGroupCount - 1);
-      vec3 nextColor = mix(getBlendedColorForHorizontal(nextIndex, fragPos.x, distToViewer, directionToViewer),
-                           getBlendedColorForHorizontal(nextIndex, fragPos.z, distToViewer, directionToViewer), 0.5);
-      return mix(flooredColor, nextColor, blendFactor);
-    }
-    return flooredColor;
+    int nextIndex = min(flooredTextureGroupIdx + 1, verticalTextureGroupCount - 1);
+    vec3 nextColor = mix(getBlendedColorForHorizontal(nextIndex, fragPos.x, distToViewer, directionToViewer),
+                        getBlendedColorForHorizontal(nextIndex, fragPos.z, distToViewer, directionToViewer), 0.5);
+    return mix(flooredColor, nextColor, blendFactor);
 }
 
 void main() {
