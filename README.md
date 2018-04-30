@@ -25,13 +25,26 @@ was too slow.
   
 ### How to run your program
 Building this project requires CMake to be installed.
+
+#### Mac
 The following steps have been tested to work on MacOSX with SDL2 installed in
-the default location. From a bash terminal in the project directory, run the following:
+the default location (where it gets placed after unpacking the DMG).
+From a bash terminal in the project directory, run the following:
 * Step 1: mkdir build
 * Step 2: cd build
 * Step 3: cmake ..
-* Step 4: make (or open the Visual Studio solution and build if on Windows)
+* Step 4: make
 * Step 5: ./FractalTerrainRendering
+
+#### Windows
+* Download the SDL2 development library here: http://libsdl.org/download-2.0.php
+* Place the unzipped folder at C:\local\ and rename it to SDL2 (After opening the new 'SDL2' dir in C:\local\, you should see 'libs' and 'include' directories)
+* Open powershell or command prompt at the root of the cloned repo
+* mkdir build
+* cd build
+* cmake .. -DCMAKE_GENERATOR_PLATFORM=x64
+* start .\FractalTerrainRendering.sln
+* Build as usual, and set the project called FractalTerrainRendering as the startup project to run
 
 #### Controls:
 * Arrow keys: move the camera
@@ -41,25 +54,3 @@ the default location. From a bash terminal in the project directory, run the fol
 * 2: Decrease move speed
 * q: quit
 * s/x/z/c: rotate the sun
-
-### Deliverables
-
-* You need to commit your code to this repository.
-* You need to have a makefile, compile script, visual studio project, or Xcode project and directions on how to run your program. If your program does not compile and run, you get a zero!
-
-### Rubric
-
-* (33.3%) Project Complection
-  * Was the proposed project completed?
-  * Does the project compile and run
-  * Is it polished without any bugs (No weird visual artifacts)
-* (33.3%) Technical
-  * Was the implementaiton of the project challenging?
-    * Even if you followed some tutoral, it should not be trivial, and have some personal touches to it.
-  * Did you have to organize/process a sufficient amount of data.
-  * Was it clear you consulted some outside resources that go above and beyond the scope of this class?
-* (33.4%) Creativity
-  * How visually appealing is the scene?
-    * Note: There should be some 'wow' factor.
-  * How original is the project
-    * Again, did you enhance a tutorial and do something unique or just go by the book?

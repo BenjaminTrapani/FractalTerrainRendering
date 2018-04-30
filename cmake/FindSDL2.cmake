@@ -69,6 +69,7 @@ SET(SDL2_SEARCH_PATHS
         ~/Library/Frameworks
         /Library/Frameworks
         /usr/local
+        /local/SDL2/
         /usr
         /sw # Fink
         /opt/local # DarwinPorts
@@ -87,7 +88,7 @@ FIND_LIBRARY(SDL2_LIBRARY_TEMP
         NAMES SDL2
         HINTS
         $ENV{SDL2DIR}
-        PATH_SUFFIXES lib64 lib
+        PATH_SUFFIXES lib64 lib/x64
         PATHS ${SDL2_SEARCH_PATHS}
         )
 
