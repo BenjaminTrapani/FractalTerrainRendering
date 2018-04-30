@@ -8,6 +8,7 @@ out vec3 TEworldPos[];
 uniform mat4 viewProj;
 uniform vec2 screenSize;
 uniform vec3 cameraPos;
+uniform float tessFactor = 1412;
 
 vec4 projectVert(vec3 value) {
     vec4 projected = viewProj * vec4(value, 1.0);
@@ -15,7 +16,8 @@ vec4 projectVert(vec3 value) {
 }
 
 float computeTessFactor(float d1, float d2) {
-    return clamp(1412 / (d1 + d2), 0, 64);
+    // 64 is the highest supported tesselation factor on most hardware
+    return clamp(tessFactor / (d1 + d2), 0, 64);
 }
 
 bool isVertexOffscreen(vec4 vert) {
