@@ -3,7 +3,8 @@
 // Please do not redistribute without asking permission.
 #include "SDLGraphicsProgram.h"
 
-
+// hack to get SDL link to work on windows
+#undef main 
 
 // The main entry piont into our program.
 int main( int argc, char* args[] )

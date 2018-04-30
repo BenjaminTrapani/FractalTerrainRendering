@@ -7,12 +7,7 @@
 
 using namespace FractalTerrain;
 
-Lights::Lights(unsigned int ishaderID, const glm::vec3& iambientLightColor):shaderID(ishaderID),
-ambientLightColor(iambientLightColor){
-    ambientLightColorLoc = glGetUniformLocation(shaderID, "ambientLightColor");
-    if (ambientLightColorLoc < 0) {
-        throw std::invalid_argument("Cannot find ambientLightColor uniform");
-    }
+Lights::Lights(unsigned int ishaderID):shaderID(ishaderID){
 }
 
 void Lights::addLight(const glm::vec3 &position, const glm::vec3 &ambientColor, const glm::vec3 &specularColor,
@@ -22,7 +17,6 @@ void Lights::addLight(const glm::vec3 &position, const glm::vec3 &ambientColor, 
 }
 
 void Lights::bind() {
-    glUniform3fv(ambientLightColorLoc, 1, &ambientLightColor[0]);
     const size_t lightsSize = lightsToRender.size();
     for (unsigned int i = 0; i < lightsSize; ++i) {
         lightsToRender.at(i)->bind();

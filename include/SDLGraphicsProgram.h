@@ -1,19 +1,7 @@
 #ifndef SDLGRAPHICSPROGRAM
 #define SDLGRAPHICSPROGRAM
 
-// ==================== Libraries ==================
-// Depending on the operating system we use
-// The paths to SDL are actually different.
-// The #define statement should be passed in
-// when compiling using the -D argument.
-// This gives an example of how a programmer
-// may support multiple platforms with different
-// dependencies.
-#ifdef MAC
-    #include <SDL.h>
-#else
-    #include <SDL2/SDL.h>
-#endif
+ #include <SDL.h>
 
 // The glad library helps setup OpenGL extensions.
 #include <glad/glad.h>

@@ -3,12 +3,10 @@
 //
 #include "Terrain.h"
 
-using namespace FractalTerrain;
-
 // How much of each unscaled patch should overlap? Prevents issues with seams
 constexpr float overlapSize = 0.f;
 
-Terrain::Terrain(unsigned int ipatchWidth, unsigned int ipatchHeight,
+FractalTerrain::Terrain::Terrain(unsigned int ipatchWidth, unsigned int ipatchHeight,
                  unsigned int patchTileSize, const float patchScale,
                  const unsigned int shaderID):
         terrainPatches(patchTileSize * patchTileSize),
@@ -33,12 +31,12 @@ Terrain::Terrain(unsigned int ipatchWidth, unsigned int ipatchHeight,
     genBuffers();
 }
 
-Terrain::~Terrain() {
+FractalTerrain::Terrain::~Terrain() {
   glDeleteBuffers(1, &vbo);
   glDeleteBuffers(1, &ibo);
 }
 
-void Terrain::initTextures(const unsigned int shaderID) {
+void FractalTerrain::Terrain::initTextures(const unsigned int shaderID) {
     unsigned int slotIndex = 0;
 
     auto grassyRocky = std::make_shared<TextureGroup>("grass_rocky_d.ppm", "grass_rocky_n.ppm",
@@ -71,13 +69,13 @@ void Terrain::initTextures(const unsigned int shaderID) {
     ++slotIndex;
 }
 
-void Terrain::bindTextures() {
+void FractalTerrain::Terrain::bindTextures() {
     for (auto pTextureGroup : textures) {
         pTextureGroup->Bind();
     }
 }
 
-void Terrain::updatePatchPositions(const glm::vec3& cameraPos) {
+void FractalTerrain::Terrain::updatePatchPositions(const glm::vec3& cameraPos) {
     // Only consider camera x and z location.
     // For each patch:
     //  For each dimension (x and z):
@@ -102,7 +100,7 @@ void Terrain::updatePatchPositions(const glm::vec3& cameraPos) {
 
 // Generate a patchWidth x patchHeight size set of vertices with triangulations in index buffer.
 // Vertices have an origin at x = y = z = 0 and span along x and z from [0, 0] -> [1, 1]
-std::shared_ptr<Terrain::VertexIndexBufferData> Terrain::generateVertexIndexBuffers() {
+std::shared_ptr<FractalTerrain::Terrain::VertexIndexBufferData> FractalTerrain::Terrain::generateVertexIndexBuffers() {
     const std::pair<float, float> spaceBetweenVerts(1.0f / (patchWidth - 1.0f), 1.0f / (patchHeight - 1.0f));
     // Layout (x y z), (x y z) ...
     auto vertexPositions = std::make_shared<std::vector<float>>(patchWidth * patchHeight * 3);
@@ -136,7 +134,7 @@ std::shared_ptr<Terrain::VertexIndexBufferData> Terrain::generateVertexIndexBuff
     return std::make_shared<VertexIndexBufferData>(vertexPositions, indices);
 };
 
-void Terrain::genBuffers() {
+void FractalTerrain::Terrain::genBuffers() {
     auto const terrainData = generateVertexIndexBuffers();
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -149,13 +147,13 @@ void Terrain::genBuffers() {
                  terrainData->indexData->data(), GL_STATIC_DRAW);
 }
 
-void Terrain::bindVertexBuffer() {
+void FractalTerrain::Terrain::bindVertexBuffer() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }
-void Terrain::bindIndexBuffer() {
+void FractalTerrain::Terrain::bindIndexBuffer() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 }
 
-GLsizei Terrain::getIndexBufferCount() const {
+GLsizei FractalTerrain::Terrain::getIndexBufferCount() const {
     return indexBufferSize;
 }

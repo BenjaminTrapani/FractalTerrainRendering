@@ -2,6 +2,7 @@
 #include "Utilities.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/rotate_vector.hpp"
+#include <string_view>
 // Initialization function
 // Returns a true or false value based on successful completion of setup.
 // Takes in dimensions of window.
@@ -107,7 +108,7 @@ SDLGraphicsProgram::~SDLGraphicsProgram() {
 
 void SDLGraphicsProgram::loadAssets() {
     terrain = std::make_shared<FractalTerrain::Terrain>(16, 16, 19, 56.0f, shader);
-    lights = std::make_shared<FractalTerrain::Lights>(shader, glm::vec3(1.0, 1.0, 1.0));
+    lights = std::make_shared<FractalTerrain::Lights>(shader);
     const glm::vec3 ones(1.0, 1.0, 1.0);
     lights->addLight(glm::vec3(0.0, 1.0, 0.0), ones, ones, ones);
 }

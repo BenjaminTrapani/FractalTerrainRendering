@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "glad/glad.h"
+#include <memory>
 
 namespace FractalTerrain {
     class Lights {
@@ -44,7 +45,7 @@ namespace FractalTerrain {
             GLint diffuseColorLoc;
         };
 
-        Lights(unsigned int shaderID, const glm::vec3 &ambientLightColor);
+        Lights(unsigned int shaderID);
 
         void addLight(const glm::vec3 &position,
                       const glm::vec3 &ambientColor,
@@ -58,7 +59,5 @@ namespace FractalTerrain {
     private:
         const unsigned int shaderID;
         std::vector<std::shared_ptr<Light>> lightsToRender;
-        glm::vec3 ambientLightColor;
-        GLint ambientLightColorLoc;
     };
 }

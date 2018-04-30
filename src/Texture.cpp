@@ -74,7 +74,7 @@ void Texture::LoadTexture(const std::string filepath){
 void Texture::loadPPM(bool flip){
 
   // Open an input file stream for reading a file
-  std::ifstream ppmFile(m_filepath.c_str());
+  std::ifstream ppmFile(m_filepath.c_str(), std::ios::binary);
   // If our file successfully opens, begin to process it
   if (ppmFile.is_open()){
       // line will store one line of input
@@ -107,13 +107,13 @@ void Texture::loadPPM(bool flip){
           }
           ++iteration;
       }
-      char buf[m_PixelData.size()];
-      ppmFile.read(buf, m_width * m_height * 3);
+      std::vector<char> buf(m_PixelData.size());
+      ppmFile.read(buf.data(), m_width * m_height * 3);
       if (ppmFile.eof() && ppmFile.fail()) {
           std::cerr << "Not enough bytes in file to fill pixel data" << std::endl;
           exit(1);
       }
-      memcpy(&m_PixelData[0], buf, m_PixelData.size());
+      memcpy(&m_PixelData[0], buf.data(), m_PixelData.size());
       ppmFile.close();
   }
   else{
