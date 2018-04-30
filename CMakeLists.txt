@@ -14,10 +14,17 @@ include_directories(include/ ${SDL2_INCLUDE_DIR} deps/glm/)
 
 add_executable(FractalTerrainRendering ${SOURCE_FILES})
 target_link_libraries(FractalTerrainRendering ${SDL2_LIBRARY})
+set_property(TARGET FractalTerrainRendering PROPERTY CXX_STANDARD 17)
 
 add_custom_command(TARGET FractalTerrainRendering POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR})
+
+if(WIN32)
+        add_custom_command(TARGET FractalTerrainRendering POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                ${SDL2_LIBRARY}/../SDL2.dll ${CMAKE_BINARY_DIR})
+endif()
 
 FILE(GLOB ShaderSources shaders/*.glsl)
 
