@@ -22,6 +22,8 @@ namespace FractalTerrain {
                 unsigned int patchTileSize,
                 float patchScale,
                 unsigned int shaderID);
+        ~Terrain();
+        
         void updatePatchPositions(const glm::vec3& cameraPos);
         void bindTextures();
         inline const TerrainPatchGrid_t& getTerrainPatches()const {

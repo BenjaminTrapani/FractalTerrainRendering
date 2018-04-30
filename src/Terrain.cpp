@@ -33,6 +33,11 @@ Terrain::Terrain(unsigned int ipatchWidth, unsigned int ipatchHeight,
     genBuffers();
 }
 
+Terrain::~Terrain() {
+  glDeleteBuffers(1, &vbo);
+  glDeleteBuffers(1, &ibo);
+}
+
 void Terrain::initTextures(const unsigned int shaderID) {
     unsigned int slotIndex = 0;
 

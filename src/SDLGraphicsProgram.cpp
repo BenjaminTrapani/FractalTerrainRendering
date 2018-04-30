@@ -284,12 +284,12 @@ bool SDLGraphicsProgram::handleKey(const SDL_Keycode keyCode) {
             quit = true;
             break;
         }
-        // Show cube
+        // Increase move speed
         case SDLK_1:{
             moveSpeed += 0.05f;
             break;
         }
-        // Show bunny
+        // Decrease move speed
         case SDLK_2:{
             moveSpeed -= 0.05f;
             break;
@@ -300,7 +300,6 @@ bool SDLGraphicsProgram::handleKey(const SDL_Keycode keyCode) {
     return quit;
 }
 
-//Loops forever!
 void SDLGraphicsProgram::loop() {
     // Main loop flag
     // If this is quit = 'true' then the program terminates.
