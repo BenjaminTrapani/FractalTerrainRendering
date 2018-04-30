@@ -100,7 +100,6 @@ float getHeightAt(vec2 xzPos) {
     float h0 = snoise(xzPos * 0.5);
     float h1 = snoise(xzPos * 2);
     float h2 = snoise(xzPos * 8);
-    // TODO make these factors uniforms so that they can be edited at runtime
     return (hn1 * 12.0 + h0 * 8.0 + h1 * 2 + h2 * 0.5) * 2.5;
 }
 

@@ -17,9 +17,6 @@ target_link_libraries(FractalTerrainRendering ${SDL2_LIBRARY})
 
 add_custom_command(TARGET FractalTerrainRendering POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/objects ${CMAKE_BINARY_DIR})
-add_custom_command(TARGET FractalTerrainRendering POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR})
 
 FILE(GLOB ShaderSources shaders/*.glsl)

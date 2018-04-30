@@ -34,7 +34,6 @@ Terrain::Terrain(unsigned int ipatchWidth, unsigned int ipatchHeight,
 }
 
 void Terrain::initTextures(const unsigned int shaderID) {
-    // Setup detail map
     unsigned int slotIndex = 0;
 
     auto grassyRocky = std::make_shared<TextureGroup>("grass_rocky_d.ppm", "grass_rocky_n.ppm",
