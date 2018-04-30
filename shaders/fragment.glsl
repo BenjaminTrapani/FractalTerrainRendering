@@ -92,31 +92,26 @@ vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param, float
     vec3 flooredColor = getColorFromGroupIdx(finalSrcOffset, distToViewer, directionToViewer);
 
     float blendFact = (halfCyclePos - blendSize) / (halfCyclePeriod - blendSize);
-    blendFact = min(blendFact, 1.0);
-    if (blendFact > 0) {
-      vec3 destColor = getColorFromGroupIdx(finalDestOffset, distToViewer, directionToViewer);
-      return mix(flooredColor, destColor, blendFact);
-    }
-    return flooredColor;
+    blendFact = clamp(blendFact, 0, 1);
+    vec3 destColor = getColorFromGroupIdx(finalDestOffset, distToViewer, directionToViewer);
+    return mix(flooredColor, destColor, blendFact);
 }
 
 vec3 getBlendedColorAtPoint(float distToViewer, vec3 directionToViewer) {
     float rawTextureGroupIdx = clamp(((fragPos.y + terrainHeightBias) / terrainHeightDiff) * verticalTextureGroupCount, 
                                       0, (verticalTextureGroupCount - 1));
     int flooredTextureGroupIdx = int(rawTextureGroupIdx);
-
+    
     vec3 flooredColor = mix(getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.x, distToViewer, directionToViewer),
                             getBlendedColorForHorizontal(flooredTextureGroupIdx, fragPos.z, distToViewer, directionToViewer), 0.5);
 
     float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + verticalBlendFactor)) / (1 - verticalBlendFactor);
-    blendFactor = min(blendFactor, 1.0);
-    if (blendFactor > 0){
-      int nextIndex = min(flooredTextureGroupIdx + 1, verticalTextureGroupCount - 1);
-      vec3 nextColor = mix(getBlendedColorForHorizontal(nextIndex, fragPos.x, distToViewer, directionToViewer),
+    blendFactor = clamp(blendFactor, 0, 1);
+
+    int nextIndex = min(flooredTextureGroupIdx + 1, verticalTextureGroupCount - 1);
+    vec3 nextColor = mix(getBlendedColorForHorizontal(nextIndex, fragPos.x, distToViewer, directionToViewer),
                         getBlendedColorForHorizontal(nextIndex, fragPos.z, distToViewer, directionToViewer), 0.5);
-      return mix(flooredColor, nextColor, blendFactor);
-    }
-    return flooredColor;
+    return mix(flooredColor, nextColor, blendFactor);
 }
 
 void main() {
