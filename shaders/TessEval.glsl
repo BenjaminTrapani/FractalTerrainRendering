@@ -1,4 +1,4 @@
-#version 410 core
+#version 320 es
 
 layout(triangles, equal_spacing, ccw) in;
 
@@ -98,9 +98,9 @@ float getHeightAt(vec2 xzPos) {
     xzPos *= 0.02;
     float hn1 = snoise(xzPos * 0.1);
     float h0 = snoise(xzPos * 0.5);
-    float h1 = snoise(xzPos * 2);
-    float h2 = snoise(xzPos * 8);
-    return (hn1 * 12.0 + h0 * 8.0 + h1 * 2 + h2 * 0.5) * 2.5;
+    float h1 = snoise(xzPos * 2.);
+    float h2 = snoise(xzPos * 8.);
+    return (hn1 * 12.0 + h0 * 8.0 + h1 * 2. + h2 * 0.5) * 2.5;
 }
 
 mat3 getTBN(vec3 trianglePoints[3]) {
@@ -146,11 +146,11 @@ void main() {
     float triangleSideLen = 0.1f;
     float tan30 = 0.5773503f;
     float sin30 = 0.5;
-    float x = tan30 * (triangleSideLen / 2);
+    float x = tan30 * (triangleSideLen / 2.);
     float h = x / sin30;
 
-    vec3 topLeft = vec3(posFromBary.x - triangleSideLen / 2, 0, posFromBary.z - x);
-    vec3 topRight = vec3(posFromBary.x + triangleSideLen / 2, 0, posFromBary.z - x);
+    vec3 topLeft = vec3(posFromBary.x - triangleSideLen / 2., 0, posFromBary.z - x);
+    vec3 topRight = vec3(posFromBary.x + triangleSideLen / 2., 0, posFromBary.z - x);
     vec3 bottomCenter = vec3(posFromBary.x, 0, posFromBary.z + h);
 
     topLeft.y = getHeightAt(topLeft.xz);

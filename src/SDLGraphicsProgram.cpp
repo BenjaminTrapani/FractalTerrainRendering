@@ -3,6 +3,12 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 #include <string_view>
+
+#if __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
+
 // Initialization function
 // Returns a true or false value based on successful completion of setup.
 // Takes in dimensions of window.
@@ -32,21 +38,30 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
         errorStream << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
         success = false;
     } else {
-        //Use OpenGL 4.1 core
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        //Use OpenGL ES 3.2
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         // We want to request a double buffer for smooth updating.
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
         //Create window
+#if __EMSCRIPTEN__
         gWindow = SDL_CreateWindow("Fractal Terrain",
                                    SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED,
                                    screenWidth,
                                    screenHeight,
                                    SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+#else
+		gWindow = SDL_CreateWindow("Fractal Terrain",
+			SDL_WINDOWPOS_UNDEFINED,
+			SDL_WINDOWPOS_UNDEFINED,
+			screenWidth,
+			screenHeight,
+			SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+#endif
 
         // Check if Window did not create.
         if (gWindow == NULL) {
@@ -62,10 +77,12 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
         }
 
         // Initialize GLAD Library
-        if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+        if (!gladLoadGLES2Loader(SDL_GL_GetProcAddress)) {
             errorStream << "Failed to iniitalize GLAD\n";
             success = false;
         }
+		
+		getOpenGLVersionInfo();
 
         //Initialize OpenGL
         if (!initGL()) {
@@ -379,6 +396,7 @@ unsigned int SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSou
     glAttachShader(program, teShader);
     glAttachShader(program, myFragmentShader);
     // Link our programs together
+	glUseProgram(program);
     glLinkProgram(program);
     glValidateProgram(program);
     int programStatus = GL_FALSE;
@@ -418,7 +436,7 @@ unsigned int SDLGraphicsProgram::CompileShader(unsigned int type, const std::str
     glCompileShader(id);
 
     // Retrieve the result of our compilation
-    int result;
+    int result = GL_FALSE;
     glGetShaderiv(id, GL_COMPILE_STATUS, &result);
     if (result == GL_FALSE) {
         int length;

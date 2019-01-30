@@ -1,4 +1,4 @@
-#version 410 core
+#version 320 es
 
 layout (location = 0) in vec3 position;
 
@@ -88,9 +88,9 @@ float getHeightAt(vec2 xzPos) {
     xzPos *= 0.02;
     float hn1 = snoise(xzPos * 0.1);
     float h0 = snoise(xzPos * 0.5);
-    float h1 = snoise(xzPos * 2);
-    float h2 = snoise(xzPos * 8);
-    return (hn1 * 12.0 + h0 * 8.0 + h1 * 2 + h2 * 0.5) * 2.5;
+    float h1 = snoise(xzPos * 2.);
+    float h2 = snoise(xzPos * 8.);
+    return (hn1 * 12.0 + h0 * 8.0 + h1 * 2. + h2 * 0.5) * 2.5;
 }
 
 void main() {
