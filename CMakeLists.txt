@@ -6,11 +6,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SDL2_LIBRARY "C:/Program Files (x86)/SDL2/lib/SDL2.lib")
-set(SDL2_INCLUDE_DIR "C:/Program Files (x86)/SDL2/include/SDL2/")
-set(SDL2_DLL_DIR "C:/Program Files (x86)/SDL2/bin/")
+#set(SDL2_LIBRARY "C:/Program Files (x86)/SDL2/lib/SDL2.lib")
+#set(SDL2_INCLUDE_DIR "C:/Program Files (x86)/SDL2/include/SDL2/")
+#set(SDL2_DLL_DIR "C:/Program Files (x86)/SDL2/bin/")
 
-#set(SDL2_INCLUDE_DIR "/usr/local/include/SDL2")
+set(SDL2_INCLUDE_DIR "/usr/local/include/SDL2")
+set(CMAKE_CXX_FLAGS "--embed-file assets/")
 
 #message(${SDL2_LIBRARY})
 
@@ -21,8 +22,8 @@ set(SOURCE_FILES ${SOURCE_FILE_DIR}/main.cpp ${SOURCE_FILE_DIR}/glad.c ${SOURCE_
 include_directories(include/ ${SDL2_INCLUDE_DIR} deps/glm/)
 
 add_executable(FractalTerrainRendering ${SOURCE_FILES})
-#target_link_libraries(FractalTerrainRendering "-s USE_SDL=2")
-target_link_libraries(FractalTerrainRendering ${SDL2_LIBRARY})
+target_link_libraries(FractalTerrainRendering "-s USE_SDL=2 -s USE_WEBGL2=1")
+#target_link_libraries(FractalTerrainRendering ${SDL2_LIBRARY})
 set_property(TARGET FractalTerrainRendering PROPERTY CXX_STANDARD 17)
 
 add_custom_command(TARGET FractalTerrainRendering POST_BUILD

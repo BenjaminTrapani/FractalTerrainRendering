@@ -1,4 +1,5 @@
 #version 320 es
+#extension GL_ARB_tessellation_shader : enable
 
 layout (location = 0) in vec3 position;
 

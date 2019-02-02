@@ -10,7 +10,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include "Texture.h"
-#include "glad/glad.h"
+#include "OpenGLDefs.h"
 
 namespace FractalTerrain {
     class Terrain {
@@ -53,9 +53,9 @@ namespace FractalTerrain {
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "diffuseMap", slotIndex);
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "normalMap", slotIndex + 1);
                 setupUniformNameForSlot(shaderID, groupIndexedAccessStr, "specularMap", slotIndex + 2);
-                diffuseMap.LoadTexture(diffusePath);
-                normalMap.LoadTexture(normalPath);
-                specularMap.LoadTexture(specularPath);
+                diffuseMap.LoadTexture("assets/" + diffusePath);
+                normalMap.LoadTexture("assets/" + normalPath);
+                specularMap.LoadTexture("assets/" + specularPath);
 
                 std::stringstream ambientStrStream;
                 std::stringstream shininessStrStream;

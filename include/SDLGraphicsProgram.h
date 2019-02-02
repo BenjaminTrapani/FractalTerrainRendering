@@ -1,10 +1,7 @@
-#ifndef SDLGRAPHICSPROGRAM
-#define SDLGRAPHICSPROGRAM
+#pragma once
 
- #include <SDL.h>
-
-// The glad library helps setup OpenGL extensions.
-#include <glad/glad.h>
+#include <SDL.h>
+#include "OpenGLDefs.h"
 
 #include <iostream>
 #include <string>
@@ -94,4 +91,3 @@ private:
     void rotateSun(float angle, const glm::vec3& axis);
 };
 
-#endif

@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <glad/glad.h>
+#include "OpenGLDefs.h"
 #include <memory>
 #include <vector>
 

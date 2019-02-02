@@ -7,7 +7,7 @@
 #include "glm/glm.hpp"
 #include <vector>
 #include <string>
-#include "glad/glad.h"
+#include "OpenGLDefs.h"
 #include <memory>
 
 namespace FractalTerrain {

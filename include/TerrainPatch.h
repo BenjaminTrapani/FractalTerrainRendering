@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "glad/glad.h"
+#include "OpenGLDefs.h"
 #include <vector>
 #include <glm/glm.hpp>
 

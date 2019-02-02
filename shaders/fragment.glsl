@@ -1,4 +1,5 @@
 #version 320 es
+#extension GL_ARB_tessellation_shader : enable
 
 precision highp float;
 
@@ -27,25 +28,25 @@ struct Light {
 // Order texture groups in increasing order by height. Blend between colors at indices. 0 - 2 are vertical
 // colors with 2 as snow. 3 and 4 are alternates for 0 and 1 horizontally.
 uniform TextureGroup textureGroups[5];
-uniform int maxTextureGroupIndex = 4;
-uniform int verticalTextureGroupCount = 3;
-uniform int horizontalCycleOffset = 3; // Since 0 + 3 = 3, 1 + 3 = 4 as required
+const int maxTextureGroupIndex = 4;
+const int verticalTextureGroupCount = 3;
+const int horizontalCycleOffset = 3; // Since 0 + 3 = 3, 1 + 3 = 4 as required
 
 uniform Light lights[1]; // lights[0] is reserved for the sun, so its position is ignored
 
-uniform float textureScaleLarge = 16.0f;
-uniform float textureScaleSmall = 1.0f;
-uniform float textureDistanceBlendFactor = 50.0f;
-uniform float horizontalTextureCyclePeriod = 100.0f;
+const float textureScaleLarge = 16.0f;
+const float textureScaleSmall = 1.0f;
+const float textureDistanceBlendFactor = 50.0f;
+const float horizontalTextureCyclePeriod = 100.0f;
 // blends between adjacent colors for (1 - horizontalBlendFactor) * (horizontalTextureCyclePeriod / 2) pixels
-uniform float horizontalBlendFactor = 0.9f;
-uniform float verticalBlendFactor = 0.9f;
-uniform float terrainHeightDiff = 100.0f;
-uniform float terrainHeightBias = 50.0f;
+const float horizontalBlendFactor = 0.9f;
+const float verticalBlendFactor = 0.9f;
+const float terrainHeightDiff = 100.0f;
+const float terrainHeightBias = 50.0f;
 
-uniform float fogDensity = 0.01;
-uniform vec3 fogColor = vec3(94.f/255.0f, 100.f/255.0f, 100.f/255.0f);
-uniform float fogStartDistance = 20.0f;
+const float fogDensity = 0.01;
+const vec3 fogColor = vec3(94.f/255.0f, 100.f/255.0f, 100.f/255.0f);
+const float fogStartDistance = 20.0f;
 
 out vec4 color;
 

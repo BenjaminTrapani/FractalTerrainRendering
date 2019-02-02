@@ -8,7 +8,6 @@
 #include <emscripten/emscripten.h>
 #endif
 
-
 // Initialization function
 // Returns a true or false value based on successful completion of setup.
 // Takes in dimensions of window.
@@ -38,7 +37,7 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
         errorStream << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
         success = false;
     } else {
-        //Use OpenGL ES 3.2
+        //Use OpenGL ES 3.0
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -47,43 +46,52 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h) : screenWidth(w), screenHei
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
         //Create window
-#if __EMSCRIPTEN__
-        gWindow = SDL_CreateWindow("Fractal Terrain",
-                                   SDL_WINDOWPOS_UNDEFINED,
-                                   SDL_WINDOWPOS_UNDEFINED,
-                                   screenWidth,
-                                   screenHeight,
-                                   SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-#else
 		gWindow = SDL_CreateWindow("Fractal Terrain",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			screenWidth,
 			screenHeight,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-#endif
 
         // Check if Window did not create.
         if (gWindow == NULL) {
             errorStream << "Window could not be created! SDL Error: " << SDL_GetError() << "\n";
             success = false;
         }
-
+		else
+		{
+			std::cout << "OpenGL window created" << std::endl;
+		}
+		
         //Create an OpenGL Graphics Context
         gContext = SDL_GL_CreateContext(gWindow);
         if (gContext == NULL) {
-            errorStream << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << "\n";
+            std::cout << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << "\n";
             success = false;
         }
 
+#ifndef __EMSCRIPTEN__
         // Initialize GLAD Library
-        if (!gladLoadGLES2Loader(SDL_GL_GetProcAddress)) {
-            errorStream << "Failed to iniitalize GLAD\n";
-            success = false;
-        }
-		
+		if (!gladLoadGLES2Loader(SDL_GL_GetProcAddress)) {
+			errorStream << "Failed to iniitalize GLAD\n";
+			success = false;
+		}
+#else
+		const SDL_bool isExtSupported = SDL_GL_ExtensionSupported("GL_EXT_tessellation_shader");
+		if (isExtSupported == GL_FALSE)
+		{
+			std::cout << "Tesselation extension for opengl es 3 is not available for your graphics card" << std::endl;
+		}
+		else
+		{
+			auto* patchParamFunc = SDL_GL_GetProcAddress("GL_OES_tessellation_shader");
+			if (patchParamFunc == nullptr)
+			{
+				std::cout << "Failed to load tess extension" << std::endl;
+			}
+		}
+#endif
 		getOpenGLVersionInfo();
-
         //Initialize OpenGL
         if (!initGL()) {
             errorStream << "Unable to initialize OpenGL!\n";
@@ -134,16 +142,16 @@ void SDLGraphicsProgram::loadAssets() {
 // Setup any of our shaders here.
 bool SDLGraphicsProgram::initGL() {
     // Setup shaders
-    const std::string vertexShader = FractalTerrain::Utilities::slurpFile("vertex.glsl");
-    const std::string tessControlShader = FractalTerrain::Utilities::slurpFile("TessControl.glsl");
-    const std::string tessEvalShader = FractalTerrain::Utilities::slurpFile("TessEval.glsl");
-    const std::string fragmentShader = FractalTerrain::Utilities::slurpFile("fragment.glsl");
+    const std::string vertexShader = FractalTerrain::Utilities::slurpFile("assets/vertex.glsl");
+    const std::string tessControlShader = FractalTerrain::Utilities::slurpFile("assets/TessControl.glsl");
+    const std::string tessEvalShader = FractalTerrain::Utilities::slurpFile("assets/TessEval.glsl");
+    const std::string fragmentShader = FractalTerrain::Utilities::slurpFile("assets/fragment.glsl");
 
     // VertexArrays
     glGenVertexArrays(1, &VAOId);
     glBindVertexArray(VAOId);
 
-    glPatchParameteri(GL_PATCH_VERTICES, 3);
+	//glPatchParameteriEXT(GL_PATCH_VERTICES_EXT, 3);
     shader = CreateShader(vertexShader, tessControlShader, tessEvalShader, fragmentShader);
 
     // Get viewProj uniform id and if we fail to find it, return false
@@ -222,7 +230,7 @@ void SDLGraphicsProgram::render() {
     for (auto terrainPatch : patchesToRender) {
         const glm::mat4 &terrainTransform = terrainPatch->getModelToWorldTransform();
         glUniformMatrix4fv(terrainModelToWorldID, 1, GL_FALSE, &terrainTransform[0][0]);
-        glDrawElements(GL_PATCHES, indexBufferCount, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_PATCHES_EXT, indexBufferCount, GL_UNSIGNED_INT, nullptr);
     }
     // Remove our program
     glDisableVertexAttribArray(0);
@@ -289,12 +297,12 @@ bool SDLGraphicsProgram::handleKey(const SDL_Keycode keyCode) {
     switch(keyCode) {
         //Toggle wireframe
         case SDLK_w:{
-            if (isWireframe){
+            /*if (isWireframe){
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             } else {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             }
-            isWireframe = !isWireframe;
+            isWireframe = !isWireframe;*/
             break;
         }
         //quit app
@@ -387,8 +395,8 @@ unsigned int SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSou
     unsigned int program = glCreateProgram();
     // Compile our shaders
     unsigned int myVertexShader = CompileShader(GL_VERTEX_SHADER, vertexShaderSource);
-    unsigned int tcShader = CompileShader(GL_TESS_CONTROL_SHADER, tessControlSource);
-    unsigned int teShader = CompileShader(GL_TESS_EVALUATION_SHADER, tessEvalSource);
+    unsigned int tcShader = CompileShader(GL_TESS_CONTROL_SHADER_EXT, tessControlSource);
+    unsigned int teShader = CompileShader(GL_TESS_EVALUATION_SHADER_EXT, tessEvalSource);
     unsigned int myFragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
     // Link our program
     glAttachShader(program, myVertexShader);
@@ -407,8 +415,15 @@ unsigned int SDLGraphicsProgram::CreateShader(const std::string &vertexShaderSou
         glGetProgramInfoLog(program, sizeof(infoLog), &logLen, infoLog);
         std::string_view logView(infoLog, (size_t)logLen);
         std::stringstream errorStream;
-        errorStream << "Failed to link program:\n" << logView;
-        throw std::invalid_argument(errorStream.str());
+        errorStream << "Failed to validate program:\n" << logView;
+		std::cout << errorStream.str() << std::endl;
+
+		int linkStatus = GL_FALSE;
+		glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+		if (linkStatus != GL_TRUE)
+		{
+			throw std::invalid_argument("Shader link failed");
+		}
     }
     // Once the shaders have been linked in, we can delete them.
     glDetachShader(program, myVertexShader);

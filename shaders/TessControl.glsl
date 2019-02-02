@@ -1,4 +1,5 @@
-#version 410 core
+#version 320 es
+#extension GL_ARB_tessellation_shader : enable
 
 layout (vertices = 3) out;
 
@@ -8,7 +9,7 @@ out vec3 TEworldPos[];
 uniform mat4 viewProj;
 uniform vec2 screenSize;
 uniform vec3 cameraPos;
-uniform float tessFactor = 1412;
+const float tessFactor = 1412.;
 
 vec4 projectVert(vec3 value) {
     vec4 projected = viewProj * vec4(value, 1.0);
@@ -36,11 +37,11 @@ void main() {
                                     isVertexOffscreen(projectedVert1),
                                     isVertexOffscreen(projectedVert2));
       if (all(areVertsOffscreen)) {
-          gl_TessLevelOuter[0] = 0;
-          gl_TessLevelOuter[1] = 0;
-          gl_TessLevelOuter[2] = 0;
+          gl_TessLevelOuter[0] = 0.;
+          gl_TessLevelOuter[1] = 0.;
+          gl_TessLevelOuter[2] = 0.;
 
-          gl_TessLevelInner[0] = 0;
+          gl_TessLevelInner[0] = 0.;
       } else {
         float distToVert0 = distance(cameraPos, TCworldPos[0]);
         float distToVert1 = distance(cameraPos, TCworldPos[1]);
