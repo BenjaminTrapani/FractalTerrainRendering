@@ -1,6 +1,4 @@
-#version 320 es
-
-precision highp float;
+#version 410 core
 
 in vec3 tangentLightPos[1];
 in vec3 tangentViewPos;
@@ -86,23 +84,23 @@ vec3 getBlendedColorForHorizontal(int flooredTextureGroupIdx, float param, float
     float halfCyclePos = mod(param, halfCyclePeriod);
 
     // Either 0 or 3 depending on cyclePos
-    float srcOffset = float(floor((cyclePos / horizontalTextureCyclePeriod) + 0.5)) * float(horizontalCycleOffset);
-    float destOffset = mod(srcOffset + float(horizontalCycleOffset), 6.);
+    float srcOffset = floor((cyclePos / horizontalTextureCyclePeriod) + 0.5) * horizontalCycleOffset;
+    float destOffset = mod(srcOffset + horizontalCycleOffset, 6);
 
-    int finalSrcOffset = min(int(float(flooredTextureGroupIdx) + srcOffset), maxTextureGroupIndex);
-    int finalDestOffset = min(int(float(flooredTextureGroupIdx) + destOffset), maxTextureGroupIndex);
+    int finalSrcOffset = min(int(flooredTextureGroupIdx + srcOffset), maxTextureGroupIndex);
+    int finalDestOffset = min(int(flooredTextureGroupIdx + destOffset), maxTextureGroupIndex);
     vec3 flooredColor = getColorFromGroupIdx(finalSrcOffset, distToViewer, directionToViewer);
     vec3 destColor = getColorFromGroupIdx(finalDestOffset, distToViewer, directionToViewer);
 
     float blendFact = (halfCyclePos - blendSize) / (halfCyclePeriod - blendSize);
-    blendFact = clamp(blendFact, 0., 1.);
+    blendFact = clamp(blendFact, 0, 1);
     
     return mix(flooredColor, destColor, blendFact);
 }
 
 vec3 getBlendedColorAtPoint(float distToViewer, vec3 directionToViewer) {
-    float rawTextureGroupIdx = clamp(((fragPos.y + terrainHeightBias) / terrainHeightDiff) * float(verticalTextureGroupCount), 
-                                      0., (float(verticalTextureGroupCount) - 1.));
+    float rawTextureGroupIdx = clamp(((fragPos.y + terrainHeightBias) / terrainHeightDiff) * verticalTextureGroupCount, 
+                                      0, (verticalTextureGroupCount - 1));
     int flooredTextureGroupIdx = int(rawTextureGroupIdx);
     int nextIndex = min(flooredTextureGroupIdx + 1, verticalTextureGroupCount - 1);
     
@@ -111,7 +109,7 @@ vec3 getBlendedColorAtPoint(float distToViewer, vec3 directionToViewer) {
     vec3 nextColor = mix(getBlendedColorForHorizontal(nextIndex, fragPos.x, distToViewer, directionToViewer),
                         getBlendedColorForHorizontal(nextIndex, fragPos.z, distToViewer, directionToViewer), 0.5);
 
-    float blendFactor = (rawTextureGroupIdx - (float(flooredTextureGroupIdx) + verticalBlendFactor)) / (1. - verticalBlendFactor);
+    float blendFactor = (rawTextureGroupIdx - (flooredTextureGroupIdx + verticalBlendFactor)) / (1 - verticalBlendFactor);
     blendFactor = clamp(blendFactor, 0, 1);
 
     return mix(flooredColor, nextColor, blendFactor);
